@@ -1,6 +1,0 @@
-my_db/__pycache__/
-manage.py
-db.sqlite3
-app/migrations/
-app/data/
-app/__pycache__/
