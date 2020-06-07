@@ -1,0 +1,882 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>SVG Editor</title>
+  <meta charset="utf-8">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <!--Bootstrap４に必要なCSSとJavaScriptを読み込み-->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/canvg/1.5/canvg.js"></script>
+  <script type="text/javascript" src="{% static 'js/cmanCP_v091.js' %}"></script>
+    <style>
+        body {
+            margin: 0;
+            width: 100%;
+            height: 1000px;
+        }
+        
+        .tool {
+            position: absolute;
+	    left: 20px; top: 0px;
+  	    display: flex;
+        }
+#canvasmenu {
+  position: absolute;
+  left: 20px; top: 25px;
+  list-style: none;
+  display: flex;
+}
+#canvasmenu li {
+  width: 20px;
+  text-align: center;
+  background-color: #f5f5f5;
+  height: 20px;
+  line-height: 20px;
+  margin-right: 2px;
+}
+.Thtm {
+  position: absolute;
+  left: 0px; top: 50px;
+  padding:0 10px 0 10px;
+  width: 1200px;
+  height: 2000px;
+}
+.Tvis {
+  position: absolute;
+  left: 0px; top: 50px;
+  padding:0 10px 0 10px;
+  width:1000px;
+  height:1000px;
+  z-index: 30;
+  background-color:"red";
+  opacity: 0.;  
+}
+.canv {
+  z-index:20;
+  padding:0 10px 0 10px;
+  width:1000px;
+  position: absolute;
+  left: 10px; top:50px;
+    opacity: 0.;  
+}
+
+#trig1{
+	height:25px;
+        background-color:#ffffdd;
+}
+#trig2{
+	height:25px;
+        background-color:#ffffdd;
+}
+    </style>
+</head>
+<body>
+<!--svg xmlns="http://www.w3.org/2000/svg" id="bbb" class="canv" height="1000" >
+    <path fill="none" stroke="blue" stroke-width="20" d="M 0 10 L 100 250 L 200 10" />
+    <rect fill="pink" stroke="red" stroke-width="5" x="50" y="200" width="250" height="50" />
+    <circle fill="yellow" stroke="green" stroke-width="10" cx="100" cy="150" r="80" / >
+</svg  -->
+    <div class="tool">
+	<form name="selbox">
+	<select name="fgedit" onchange="sample()" style="width:60px; height:25px;" ></p>
+	<option value="">Visual</option>
+	<option value="">Html</option>
+	<option value="">Svg</option>
+	</select>
+	</form>
+        <button id="clear">clear</button>
+        <select name="control" id="control">
+    		<option value="line">serial line</option>
+    		<option value="close_line">closed line</option>
+		<option value="quad_bezier">quad bezier</option>
+		<option value="cubic_bezier">cubic bezier</option>
+    		<option value="free_line">free line</option>
+  	</select>
+	<button id="bold">bold</button>
+	<button id="h3">h3</button>
+	<button id="link">link</button>
+	<button id="chara">文字変更</button>
+        <button id="trig1">選択1</button>
+	<button id="trig2">選択2</button>
+        <div id="cp01" onclick="cmanCP_JS_open(this)" cmanCPat="def_color:val=sample1,def_alpha:0,rc_text:sample1,rc_form:#16,rc_bg:cp01"></div>
+        <input type='text' value="#0000ff" id="sample1" onchange="check_color()">
+    </div>
+  <ul id="canvasmenu">
+    <li class="menuicon" id="size14px">14</div>
+    <li class="menuicon" id="size7px">7</div>
+    <li class="menuicon" id="size5px">5</div>
+    <li class="menuicon" id="size3px">3</div>
+    <li class="menuicon" id="size2px">2</div>
+    <li class="menuicon" id="size1px">1</div>
+    <li class="menuicon" id="colore91e63" style="background-color:#e91e63">○</div>
+    <li class="menuicon" id="colorffeb3b" style="background-color:#ffeb3b">○</div>
+    <li class="menuicon" id="colorff4801" style="background-color:#ff4801">○</div>
+    <li class="menuicon" id="color536dfe" style="background-color:#536dfe">○</div>
+    <li class="menuicon" id="color009688" style="background-color:#009688">○</div>
+    <li class="menuicon" id="color00e676" style="background-color:#00e676">○</div>
+    <li class="menuicon" id="color555555" style="background-color:#555555">○</div>
+    <li class="menuicon" id="alpha10" style="background-color:rgba(255,72,1, 1.0)">10</div>
+    <li class="menuicon" id="alpha6" style="background-color:rgba(255,72,1, 0.6)">6</div>
+    <li class="menuicon" id="alpha3" style="background-color:rgba(255,72,1, 0.3)">3</div>
+    <li class="menuicon" id="alpha1" style="background-color:rgba(255,72,1, 0.1)">1</div>
+  </ul>
+  <div class="main tab-content"><!-- Start main tab-content -->
+    <div class="tab-pane" id="tab1"><!-- Start tab1 -->
+	<!--canvas id="myCanvas" class="canv" ></canvas -->
+        <svg id="myCanvas" class="canv" width="1000" height="1000" viewBox="10 50 1000 1000" xmlns="http://www.w3.org/2000/svg">
+		<svg xmlns="http://www.w3.org/2000/svg" >
+    		<path fill="none" stroke="blue" stroke-width="20" d="M 0 10 L 100 250 L 200 10" />
+    		<rect fill="pink" stroke="red" stroke-width="5" x="50" y="200" width="250" height="50" />
+    		<circle fill="yellow" stroke="green" stroke-width="10" cx="100" cy="150" r="80" / >
+		</svg>
+	</svg>
+	<div class="Tvis" id="texx" contenteditable="true"></div>
+    </div><!-- End tab1 -->
+    <div class="tab-pane active" id="tab2"><!-- Start tab2 -->
+       <textarea class="Thtm" id="texh" contenteditable="false"></textarea>
+    </div><!-- End tab2 -->
+  </div><!-- End main tab-content -->
+<!--/div><!-- End container-fluid -->
+</body>
+<script>
+    var clickCount = 0 ;
+    var Up_count=0;
+    var Move_mode=0;
+    var mouse_Error=false;
+
+    var container = document.getElementById('myCanvas');
+//    var control = document.getElementById('control');
+//    var omit = document.getElementById('omit');
+//    var omitLabel = document.getElementById('omit-label');
+    var clear = document.getElementById('clear');
+
+    var sw_flag=10;
+    var mv_flag=10;
+
+    clear.onclick = function() {
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+    }
+
+    bold.onclick = function() {
+const selectedText = window.getSelection().toString();
+console.log(selectedText);
+
+var sel = window.getSelection();
+  if(!sel.rangeCount) return; //範囲選択されている箇所がない場合は何もせず終了
+
+  var range = sel.getRangeAt(0);　　　　　　　　　　　//　OK!!
+  var newNode = document.createElement('b');
+  newNode.innerHTML =  sel.toString();   //選択文字列をnewNodeとして設定
+  range.deleteContents();    // 範囲選択箇所を一旦削除
+  range.insertNode(newNode); // 前後に<b>と</b>を入れる。
+
+//let newNode = document.createElement('b');     //OK
+//      range.surroundContents(newNode);
+
+//let newNode = document.createElement('u');     //　OK
+//      newNode.innerHTML = "NEW NODE";
+//      range.insertNode(newNode);
+    }
+
+    link.onclick = function() {
+//const selectedText = window.getSelection().toString();
+//console.log(selectedText);
+  var sel = window.getSelection();
+  if(!sel.rangeCount) return; //範囲選択されている箇所がない場合は何もせず終了
+
+  var range = sel.getRangeAt(0);　　　　　　　　　　　//　OK!!
+  var newNode =document.createElement('a');
+  var user = window.prompt("link先を入力してください", "");
+//console.log(user);
+  newNode.href = user;
+//  newNode.href = "https://www.yahoo.co.jp"
+//  var string=sel.toString();
+  newNode.innerHTML = sel.toString();   //tag部分に<>を含むと変更出来ない。
+  range.deleteContents();    // 範囲選択箇所を一旦削除
+  range.insertNode(newNode); 
+
+    }
+
+    h3.onclick = function() {
+const selectedText = window.getSelection().toString();
+console.log(selectedText);
+
+var sel = window.getSelection();
+  if(!sel.rangeCount) return; //範囲選択されている箇所がない場合は何もせず終了
+
+  var range = sel.getRangeAt(0);　　　　　　　　　　　//　OK!!
+  var newNode = document.createElement('h3');
+//  newNode.setAttribute('style', 'background-color: blue;'); //範囲選択箇所の背景を青にする
+  newNode.innerHTML = sel.toString();   //tag部分に<>を含むと変更出来ない。
+  range.deleteContents();    // 範囲選択箇所を一旦削除
+  range.insertNode(newNode); // 範囲選択箇所の先頭から、修飾したspanを挿入
+  }
+
+var prev=0;
+var check_count;
+
+$("#trig1").bind("click", (function () {
+    var subWinObj1='cmanCP_POP';
+//    alert("Trigger is clicked!");
+    $("#cp01").trigger("click");
+	prev=10;
+//	window.focus();
+//	window.blur();
+	document.getElementById("cmanCP_POP" ).style.zIndex ='100';
+	check_count=0;
+	setTimeout("check_color()",200);
+
+}));
+$("#trig2").bind("click", (function () {
+    var subWinObj1='cmanCP_POP';
+//    alert("Trigger is clicked!");
+    $("#cp01").trigger("click");
+	prev=20;
+//	window.focus();
+//	window.blur();
+	document.getElementById("cmanCP_POP" ).style.zIndex ='100';
+	check_count=0;
+	setTimeout("check_color()",200);
+
+}));
+
+function check_color() {
+//console.log('Enter check_color',check_count);
+  //値が変更されたときの処理
+	if(!document.getElementById("cmanCP_POP")) {
+	    if (prev==10) {
+		var col_code=document.getElementById("sample1" ).value;
+        	document.querySelector('#trig1').style.backgroundColor = col_code;
+//console.log('color=',col_code);
+ 	    	}
+	    if (prev==20) {
+		var col_code=document.getElementById("sample1" ).value;
+        	document.querySelector('#trig2').style.backgroundColor = col_code;
+//console.log('color=',col_code);
+	    	}
+	    }
+	else {
+	    check_count=check_count+1;
+	    if(check_count>50) {
+		return;
+		}
+	    setTimeout("check_color()",200);
+	    }
+}
+/*
+    chara.onclick = function() {
+const selectedText = window.getSelection().toString();
+colval=document.getElementById("col").value;
+console.log('Sel_text=',selectedText,'color=',colval);
+
+var sel = window.getSelection();
+  if(!sel.rangeCount) return; 
+
+  var range = sel.getRangeAt(0);　　　　　　　　　　　//OK!!　<font>でも下記の<span>でもOK
+  var font = document.createElement("font");
+  font.style.color = colval;
+  range.surroundContents(font);
+
+//  var span = document.createElement("span");     //OK
+//  span.style.color = colval;
+//  range.surroundContents(span);
+
+    }
+*/
+
+    var isDrawing = false;
+    var drawingPoints=[];
+    var drawingPath=null;
+    var Oper=0;
+    var Step=0;
+    var defaultPathStyle = {
+        strokeWidth: "3px",
+        stroke: "#000",
+        fill: "none",
+    };
+    var defaultPointStyle = {
+        strokeWidth: "1px",
+        stroke: "red",
+        fill: "none",
+    };
+    var tempoPathStyle = {
+        strokeWidth: "1px",
+        stroke: "red",
+        fill: "none",
+    };
+   var mouse_handle=function(e){
+			Move_mode=0;
+			if(clickCount>=2){
+				if(clickCount==Up_count) {
+					console.log('Double clicked');
+					mode='dblclick';
+				}
+				else {
+					console.log('Pretend Double clicked');
+					mode='dblclick';
+					mouse_Error=true;
+				}
+			}
+			else {
+				if(clickCount==Up_count) {
+					console.log('Clicked')
+					mode='click';
+				}
+				else {
+					Move_mode=1;
+					console.log('Down mode')
+					mode='Move_mode';
+				}
+			}
+			console.log('down=',clickCount,'Up_count=',Up_count);
+		clickCount=0;
+		Up_count=0;
+
+	if ((Editmode=='Svg')&&(mode=='dblclick')) {
+		dbl_click_func(e);
+	}
+	if ((Editmode=='Svg')&&(mode=='click')){
+		click_func(e);
+	}
+
+	if ((Editmode=='Tvis')&&(mode=='click')){
+		Text_edit();
+	}
+}
+
+
+//メニューのアイコン関係
+    var menuIcon = document.getElementsByClassName("menuicon");
+    for (i = 0; i < menuIcon.length; i++) {
+        menuIcon[i].addEventListener("click", canvasMenu, false)
+    }
+
+//    target1 = document.getElementById("texx");
+    document.getElementById("texx").innerHTML = "<p><h1>SVGの埋め込み</h1></p>"+
+    "<p><h2>これは、SVGをインラインで埋め込んだものです。</h2></p>"+
+    "<p><h3>svgタグはHTMLの要素として用意されて"+
+        "おり、一般のHTMLタグと同じ感覚で記述できます。</h3></p>"+
+    '<p>style="position:absolute"を指定することで、'+
+        "グラフィックとその他のHTML要素を重ねて表示させる"+
+        "ことも自由に行えるようになります。</p>"+
+     '<p>style="position:absolute"を指定することで、'+
+        "グラフィックとその他のHTML要素を重ねて表示させる"+
+        "ことも自由に行えるようになります。</p>";
+
+		Editmode="Tvis";
+		nodisp=document.getElementById('tab2');
+       		nodisp.style.display='none';
+       		disp=document.getElementById('tab1');
+       		disp.style.display='block';
+//document.getElementById("bbb").style.display="block";
+document.getElementById("myCanvas").style.display="block";
+　　　　　　	document.getElementById("texh").contentEditable = false;
+　　　　　　	document.getElementById("texx").contentEditable = true;
+		document.getElementById( "texx" ).style.zIndex ='40';
+		document.getElementById( "texh" ).style.zIndex ='20';
+//		document.getElementById( "myCancas" ).style.zIndex ='20';
+		document.getElementById("texh").value=document.getElementById("texx").innerHTML;
+
+//ダブルクリック時の処理を入れる
+var dbl_click_func=function(e){
+// ダブルクリックイベントの処理内容
+console.log( "ダブルクリック!!" ) ;
+// クリック回数をリセット
+	clickCount = 0 ;
+        if (!Step) {
+            	return;
+        	}
+	Oper=2;
+	if ((control.value== 'line')||(control.value== 'close_line')){
+        	drawingPoints.push({x: e.clientX,y: e.clientY});
+		var close=0;
+		if(control.value== 'close_line') {
+			close=1;
+			drawingPoints.push(drawingPoints[0]);
+			}
+        	container.removeChild(drawingPath);
+        	drawingPath = null;
+        	var path;
+//console.log(drawingPoints);
+        	path = createPath(drawingPoints,close);
+        	Object.assign(path.style, defaultPathStyle);
+        	container.appendChild(path);
+		Oper=0;
+		Step=0;
+		drawingPoints = [];
+		}
+	if ((control.value== 'quad_bezier')||(control.value== 'cubic_bezier')){
+            	if (bezier_line){
+			container.removeChild(bezier_line);
+			bezier_line=null;
+			}
+		if (first_point){
+			container.removeChild(first_point);
+			first_point=null;
+			}
+		Oper=0;
+		Step=0;
+		first_point='';
+		drawingPoints = [];
+//console.log('bezier dummy removed');
+		}
+}
+//Singleクリック時の処理を入れる
+var click_func=function(e){
+console.log('Singleクリック',control.value,'Step=',Step);
+	Oper=3;
+	if (Step==0) {
+		//free lineなどの残骸を消して開始する
+		isDrawing=0;
+		if (drawingPath) {
+                	container.removeChild(drawingPath);
+			drawingPath=null;
+			}
+        	drawingPoints = [];
+		}
+	Step+=1;
+        drawingPoints.push({x: e.clientX, y: e.clientY});
+	if ((control.value== 'line')||(control.value== 'close_line')){
+		sw_flag=0;
+		}
+	if ((control.value== 'quad_bezier') &&(Step<2)){
+		sw_flag=1;
+		}
+	if ((control.value== 'cubic_bezier') &&(Step<3)){
+		sw_flag=2;
+		}
+console.log('switch=',sw_flag);
+	if(drawingPoints.length==1){
+		first_point=createFirstPoint(drawingPoints)
+	        Object.assign(first_point.style, defaultPointStyle);
+        	container.appendChild(first_point)
+		}
+	else {
+		if (first_point){
+			container.removeChild(first_point);
+			first_point=null;
+			}
+		}
+//console.log('switch=',sw_flag);
+	switch(sw_flag){
+		case 0:
+            		if (drawingPath) {
+                		container.removeChild(drawingPath);
+            			}
+        		drawingPath = createPath(drawingPoints,0);
+        		Object.assign(drawingPath.style, defaultPathStyle);
+        		container.appendChild(drawingPath);
+//console.log('Path=',drawingPath);
+			break;
+		case 1:
+console.log('Bezier',Step,'length=',drawingPoints.length);
+
+			if(Step<=2){
+				bezier_line=null;
+				}
+			if ((control.value == 'quad_bezier')&&(Step==2)) {
+console.log('Bezier line');
+				if(drawingPoints.length==2){
+					bezier_line=createPath(drawingPoints,0)
+	        			Object.assign(bezier_line.style, tempoPathStyle);
+        				container.appendChild(bezier_line)
+					Step=3;
+console.log('Bezier line',drawingPoints);
+					}
+				}
+			break;
+		case 2:
+console.log('Cubic Bezier',Step,'length=',drawingPoints.length);
+			if(Step<=2){
+				bezier_line=null;
+				}
+			if ((control.value == 'cubic_bezier')&&(Step>=2)) {
+console.log('Cubic Bezier line');
+				if(drawingPoints.length>=2){
+		            		if (bezier_line) {
+                				container.removeChild(bezier_line);
+            					}
+					bezier_line=createPath(drawingPoints,0)
+	        			Object.assign(bezier_line.style, tempoPathStyle);
+       					container.appendChild(bezier_line)
+console.log('Cubic Bezier line',drawingPoints);
+					}
+				if(drawingPoints.length==3) {
+				       Step=4;
+					}
+				}
+			break;
+		}
+	}
+
+
+    container.addEventListener( "mousedown", function( e ) {
+	++clickCount ;
+console.log('mousedown');
+		// 350ミリ秒だけ、クリック回数を維持
+	if(clickCount==1){
+//mouse_handleでdblclick,click,Move_modeかの判定 mouse_handleにパラメータeを渡すmouse_handle(e)同等
+		setTimeout(mouse_handle,350,e);
+	}
+    });
+
+    container.addEventListener('mousemove', function(e) {
+//Move_modeならばmouseの動きについての処理を記述する
+	if((Move_mode)&&(!isDrawing)) {
+console.log('mouse move');
+		if (control.value== 'free_line'){
+			isDrawing=true;
+			mv_flag=0;
+			drawingPoints=[];
+console.log('Reset isDraw')
+			
+			}
+		if ((control.value== 'quad_bezier') &&(Step==3)){
+			isDrawing=true;
+			mv_flag=1;
+			}
+		if ((control.value== 'cubic_bezier') &&(Step==4)){
+			isDrawing=true;
+			mv_flag=2;
+			}
+console.log('move_flag=',mv_flag,'Oper=',Oper);
+		}
+	switch(mv_flag){
+		case 0:
+            		drawingPoints.push({x: e.clientX,y: e.clientY});
+            		if (drawingPath) {
+                		container.removeChild(drawingPath);
+console.log('remove point');
+            			}
+                	drawingPath = createPath(drawingPoints,0);
+            		Object.assign(drawingPath.style, defaultPathStyle);
+            		container.appendChild(drawingPath);
+console.log('append point');
+			break;
+		case 1:
+			if(drawingPoints.length==3) {
+				drawingPoints.pop();
+				}
+            		drawingPoints.push({x: e.clientX,y: e.clientY});
+            		if (drawingPath) {
+                		container.removeChild(drawingPath);
+console.log('remove bezier');
+            			}
+			if(Step==0){
+				drawingPath=null;
+				}
+                	drawingPath = createQuadBezier(drawingPath,drawingPoints,Step);
+            		Object.assign(drawingPath.style, defaultPathStyle);
+            		container.appendChild(drawingPath);
+console.log('append bezier');
+			break;
+		case 2:
+			if(drawingPoints.length==4) {
+				drawingPoints.pop();
+				}
+            		drawingPoints.push({x: e.clientX,y: e.clientY});
+            		if (drawingPath) {
+                		container.removeChild(drawingPath);
+console.log('remove cubic bezier');
+            			}
+			if(Step==0){
+				drawingPath=null;
+				}
+                	drawingPath = createCubicBezier(drawingPath,drawingPoints,Step);
+            		Object.assign(drawingPath.style, defaultPathStyle);
+            		container.appendChild(drawingPath);
+console.log('append cubic bezier');
+			break;
+		}
+    });
+
+    container.addEventListener('mouseup', function(e) {
+	++Up_count;
+console.log('mouse up');
+	if(mouse_Error) {
+		mouse_Error=false;
+		Up_count=0;
+		}
+	if (Move_mode) {
+console.log('canceled Move_mode');
+		Move_mode=0;
+		Up_count=0;
+
+		if ((control.value=='free_line')||(control.value=='quad_bezier')||(control.value=='cubic_bezier')){
+			}
+		else {
+			return;
+			}
+        	isDrawing = false;
+        	if (drawingPath) {
+	        	container.removeChild(drawingPath);
+			}
+        	drawingPath = null;
+       	 	var path;
+
+        	if ((control.value === 'quad_bezier') && (Step==3)){
+console.log('bezier mouseup');
+            		path = createQuadBezier('',drawingPoints, 0);
+	    		Step=1;
+	    		var drawPoints=drawingPoints;
+	   		 drawingPoints=[];
+            		drawingPoints.push(drawPoints[2]);
+            		if (bezier_line){
+				container.removeChild(bezier_line);
+				bezier_line=null;
+console.log('bezier dummy removed length=',drawingPoints.length);
+				}
+			first_point=createFirstPoint(drawingPoints)
+	        	Object.assign(first_point.style, defaultPointStyle);
+        		container.appendChild(first_point)
+		        }
+        	else if ((control.value === 'cubic_bezier') && (Step==4)){
+console.log('cubic bezier mouseup');
+            		path = createCubicBezier('',drawingPoints, 0);
+	    		Step=1;
+	    		var drawPoints=drawingPoints;
+	   		 drawingPoints=[];
+            		drawingPoints.push(drawPoints[3]);
+            		if (bezier_line){
+				container.removeChild(bezier_line);
+				bezier_line=null;
+console.log('cubic bezier dummy removed length=',drawingPoints.length);
+				}
+			first_point=createFirstPoint(drawingPoints)
+	        	Object.assign(first_point.style, defaultPointStyle);
+        		container.appendChild(first_point)
+		        }
+		else {
+console.log('line mouseup');
+            		path = createPath(drawingPoints,0);
+	    		drawingPoints = [];
+        		}
+        	Object.assign(path.style, defaultPathStyle);
+        	container.appendChild(path);
+		isDrawing=false;
+		Oper=0;
+		mv_flag=10;
+		}
+    });
+
+    function Text_edit(){
+console.log("Enter Text EditMode")
+    }
+
+    function createFirstPoint(points) {
+	circ1=document.createElementNS('http://www.w3.org/2000/svg','circle');
+	circ1.setAttribute('cx',points[0].x);
+	circ1.setAttribute('cy',points[0].y);
+	circ1.setAttribute('r',4);
+//	circ1.setAttribute('fill','red');
+//	circ1.setAttribute('stroke','black');
+//	svg.appendChild(circ1);
+console.log(circ1)
+        return circ1;
+    }
+
+    function createPath(points,close) {
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        var attribute = '';
+        points.forEach((point, index) => {
+            if (index === 0) {
+                attribute += `M${point.x}, ${point.y}`;
+            } else {
+                attribute += `L${point.x}, ${point.y}`;
+            }
+        });
+	if(close==true){
+		attribute += ` Z`;
+		}
+        path.setAttributeNS(null, 'd', attribute);
+console.log(path)
+        return path;
+    }
+
+    function createQuadBezier(path,points, step) {
+console.log('quad bezier','length=',points.length);
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        var attribute = '';
+        points.forEach((point, index) => {
+            if (index === 0) {
+                attribute += `M${point.x}, ${point.y}`;
+            	} 
+	    else if (index===1) {
+                attribute += `Q${point.x}, ${point.y}`;
+            	}
+	    else {
+		attribute += ` ${point.x}, ${point.y}`;
+		}
+        });
+        path.setAttributeNS(null, 'd', attribute);
+console.log(path)
+        return path;
+    }
+
+    function createCubicBezier(path,points, step) {
+console.log('cubic bezier','length=',points.length);
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        var attribute = '';
+        points.forEach((point, index) => {
+            if (index === 0) {
+                attribute += `M${point.x}, ${point.y}`;
+            	} 
+	    else if (index===1) {
+                attribute += `C${point.x}, ${point.y}`;
+            	}
+	    else {
+		attribute += ` ${point.x}, ${point.y}`;
+		}
+        });
+        path.setAttributeNS(null, 'd', attribute);
+console.log(path)
+        return path;
+    }
+
+    //メニューボタン管理
+    function canvasMenu() {
+
+     if(Editmode=='Svg'){
+        //id 値によって場合分け
+        var thisId = this.id;
+        if (thisId.indexOf("size") + 1) {
+            defaultPathStyle.strokeWidth = this.id.slice(4, this.id.length);
+        }
+        if (thisId.indexOf("color") + 1) {
+            defaultPathStyle.stroke = "#" + this.id.slice(5, this.id.length);
+        }
+        if (thisId.indexOf("alpha") + 1) {
+ //           defoalpha = (~~this.id.slice(5, this.id.length)) / 10;
+        }
+/*
+        if (thisId.indexOf("clear") + 1) {
+            //全消しボタン、OKされた場合は fillRect 長方形で覆います
+            if (confirm("すべて消去しますか？")) {
+                //ctx.fillStyle = "#f5f5f5";
+                //ctx.globalAlpha = defoalpha;
+   		//その描画状態を保存する
+		ctx.clearRect(0, 0, 700, 400);
+                //ctx.fillRect(0, 0, 700, 400);
+console.log('fillStyle=',ctx.fillStyle);
+		//sleep(2000);
+		//svg_str='<svg width="700px" height="400px" >'
+		//svg_str+=path_str+' /svg>';
+//console.log('**canvg',svg_str);
+		//canvg("myCanvas",svg_str);
+                mouseX = "";
+                mouseY = "";
+            }
+        }
+*/
+     }
+     else {
+	var selectedText = window.getSelection().toString();
+	console.log(selectedText);
+	var sel = window.getSelection();
+	if(!sel.rangeCount) return; //範囲選択されている箇所がない場合は何もせず終了
+	var range = sel.getRangeAt(0);　　　　　　　　　　　//　OK!!
+        //id 値によって場合分け
+        var thisId = this.id;
+        if (thisId.indexOf("size") + 1) {
+            var size = this.id.slice(4, this.id.length);
+            if(size=='14px') {
+		 h_size='h1'; 
+		}
+            if(size=='7px') {
+		 h_size='h2'; 
+		}
+            if(size=='5px') {
+		 h_size='h3'; 
+		}
+            if(size=='3px') {
+		 h_size='h4'; 
+		}
+            if(size=='2px') {
+		 h_size='h5'; 
+		}
+            if(size=='1px') {
+		 h_size='h6'; 
+		}
+		const selectedText = window.getSelection().toString();
+		console.log(h_size,selectedText);
+		var sel = window.getSelection();
+		if(!sel.rangeCount) return; //範囲選択されている箇所がない場合は何もせず終了
+		  var range = sel.getRangeAt(0);　　　　　　　　　　　//　OK!!
+		  var newNode = document.createElement(h_size);
+		  newNode.innerHTML =  sel.toString();   //tag部分に<>を含むと変更出来ない。
+		  range.deleteContents();    // 範囲選択箇所を一旦削除
+		  range.insertNode(newNode); // 範囲選択箇所の先頭から、修飾したspanを挿入
+        }
+
+     }
+    }
+
+function sample(){
+    //選択したf_editによって分岐
+    switch (document.selbox.fgedit.selectedIndex){
+      case 0: 
+		Editmode="Tvis";
+		nodisp=document.getElementById('tab2');
+       		nodisp.style.display='none';
+       		disp=document.getElementById('tab1');
+       		disp.style.display='block';
+//document.getElementById("bbb").style.display="block";
+document.getElementById("myCanvas").style.display="block";
+　　　　　　	document.getElementById("texh").contentEditable = false;
+　　　　　　	document.getElementById("texx").contentEditable = true;
+		document.getElementById( "texx" ).style.zIndex ='40';
+		document.getElementById( "texh" ).style.zIndex ='20';
+//		document.getElementById( "myCancas" ).style.zIndex ='20';
+		document.getElementById("texx").innerHTML=document.getElementById("texh").value;
+		break;
+      case 1: 
+		Editmode="Thtm";
+		nodisp=document.getElementById('tab1');
+        	nodisp.style.display='none';
+        	disp=document.getElementById('tab2');
+        	disp.style.display='block';
+//document.getElementById("bbb").style.display="none";
+document.getElementById("myCanvas").style.display="none";
+　　　　　　	document.getElementById("texh").contentEditable = true;
+　　　　　　	document.getElementById("texx").contentEditable = false;
+		document.getElementById( "texh" ).style.zIndex ='40';
+		document.getElementById( "texx" ).style.zIndex ='20';
+//		document.getElementById( "myCancas" ).style.zIndex ='30';
+		document.getElementById("texh").value=document.getElementById("texx").innerHTML;
+		break;
+      case 2: 
+//		Editmode="None";
+		Editmode="Svg";
+		nodisp=document.getElementById('tab2');
+       		nodisp.style.display='none';
+       		disp=document.getElementById('tab1');
+       		disp.style.display='block';
+//document.getElementById("bbb").style.display="block";
+document.getElementById("myCanvas").style.display="block";
+　　　　　　	document.getElementById("texh").contentEditable = false;
+　　　　　　	document.getElementById("texx").contentEditable = false;
+		document.getElementById( "texh" ).style.zIndex ='10';
+		document.getElementById( "texx" ).style.zIndex ='10';
+//		document.getElementById( "myCancas" ).style.zIndex ='30';
+		break;
+    }
+}
+// ビジーwaitを使う方法
+function sleep(waitMsec) {
+  var startMsec = new Date();
+ 
+  // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
+  while (new Date() - startMsec < waitMsec);
+}
+
+
+
+</script>
+
+</html>

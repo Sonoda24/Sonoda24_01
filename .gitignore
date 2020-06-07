@@ -1,0 +1,7 @@
+my_db/my_db/__pycache__/
+Db_To_Csv2020.csv
+manage.py
+db.sqlite3
+my_db/db_serv/migrations/
+my_db/db_serv/__pycache__/
+my_db/media/
