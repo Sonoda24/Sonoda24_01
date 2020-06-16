@@ -3,10 +3,17 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from .forms import UploadFileForm
 from .models import My_Data
+from .models import My_Svg
 from django.http import HttpResponse
+from django.http import Http404
 import os, csv
-
 import sys
+import re
+from six.moves.html_entities import codepoint2name, name2codepoint
+from six import unichr
+
+db_data=''
+svg_data=''
 
 # ------------------------------------------------------------------
 def index(request):
@@ -14,10 +21,42 @@ def index(request):
     context = {'latest_list': latest_list}
     return render(request, 'db_serv/index.html',context)
 # ------------------------------------------------------------------
-def detail(request):
- 
-    return render(request, 'db_serv/detail.html')
-#
+def detail(request, data_id):
+    global db_data,svg_data
+    try:
+        db_data = My_Data.objects.get(pk=data_id)
+        view_tex=db_data.description
+        print('Db_data',db_data.overview)
+        svg_data=My_Svg.objects.get(pk=data_id)
+        svg_field=''
+        if(svg_data.svg_tags!=''):
+            svg_field = svg_data.svg_tags
+            svg_field=svg_field.strip()
+            print('**Svg=',svg_field)
+        context = {
+            'view_tex': view_tex,
+            'svg_field': svg_field,
+            }
+    except My_Data.DoesNotExist:
+        raise Http404("da_data does not exist")
+    return render(request, 'db_serv/detail.html', context)
+#def detail(request,data_id):
+# 
+#    return render(request, 'db_serv/detail.html')
+#]
+def update(request):
+    global db_data,svg_data
+#    t = Todo.objects.get(todo_id=1)
+    tex = request.GET.get("description")
+    svg_field = request.GET.get("svg")
+    svg_field=svg_field.strip()
+    print('***Update data=',tex)
+    print('***SVG data=',svg_field)
+    db_data.description = tex
+    svg_data.svg_tags=svg_field
+    db_data.save()
+    svg_data.save()
+    return HttpResponse('update!')    
 # ------------------------------------------------------------------
 def file_upload(request):
     if request.method == 'POST':
@@ -45,12 +84,16 @@ def file_upload(request):
                 my.bunrui3 = line[4]
                 my.day_regist = line[5]
                 my.day_modify = line[5]
-                my.overview = line[6]
-                my.description = line[7]
+                my.overview = decode(line[6])
+                my.description = decode(line[7])
                 my.keywords=''
                 print('***count=',ncnt,'data=',my.theme,my.bunrui1,my.bunrui2)
                 my.save()
-
+                mysvg=My_Svg()
+                mysvg.no=ncnt
+                mysvg.svg_tags=''
+                mysvg.save()
+                
             return HttpResponseRedirect('/success/url/')
     else:
         form = UploadFileForm()
@@ -87,4 +130,21 @@ def success(request):
     str_out = "Success!<p />"
     str_out += "成功<p />"
     return HttpResponse(str_out)
+# ------------------------------------------------------------------
+def encode(source):
+    new_source = ''
+
+    for char in source:
+        if ord(char) in codepoint2name:
+            char = '&%s;' % codepoint2name[ord(char)]
+        new_source += char
+
+    return new_source
+# ------------------------------------------------------------------
+def decode(source):
+    for entitie in re.findall('&(?:[a-z][a-z0-9]+);', source):
+        entitie = entitie.replace('&', '')
+        entitie = entitie.replace(';', '')
+        source = source.replace('&%s;' % entitie, unichr(name2codepoint[entitie]))
+    return source
 # ------------------------------------------------------------------

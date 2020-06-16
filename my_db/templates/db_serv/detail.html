@@ -7,7 +7,9 @@
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
   <!--Bootstrap４に必要なCSSとJavaScriptを読み込み-->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="{% static 'icomoon/style.css' %}">
+  <!-- script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script -->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/canvg/1.5/canvg.js"></script>
@@ -75,14 +77,13 @@
     </style>
 </head>
 <body>
-<!--svg xmlns="http://www.w3.org/2000/svg" id="bbb" class="canv" height="1000" >
-    <path fill="none" stroke="blue" stroke-width="20" d="M 0 10 L 100 250 L 200 10" />
-    <rect fill="pink" stroke="red" stroke-width="5" x="50" y="200" width="250" height="50" />
-    <circle fill="yellow" stroke="green" stroke-width="10" cx="100" cy="150" r="80" / >
-</svg  -->
     <div class="tool">
 	<form name="selbox">
-	<select name="fgedit" onchange="sample()" style="width:60px; height:25px;" ></p>
+	<select name="edit" onchange="edit_mode()" style="width:60px; height:25px;" ></p>
+	<option value="">Display</option>
+	<option value="">Edit</option>
+	</select>
+	<select name="fgedit" onchange="chng_mode()" style="width:60px; height:25px;" ></p>
 	<option value="">Visual</option>
 	<option value="">Html</option>
 	<option value="">Svg</option>
@@ -96,14 +97,22 @@
 		<option value="cubic_bezier">cubic bezier</option>
     		<option value="free_line">free line</option>
   	</select>
+	<!-- span class="icon-link" style="width:25px; height:25px;"></span>
+	<span class="icon-database" style="width:25px; height:25px;"></span -->
+	<!--button id="link" class="icon-link" style="width:25px; height:25px;"></button>
+	<button id="doc_save" class="icon-database" style="width:25px; height:25px;"></button -->
+	<div class="icon-link" onclick="link()" style="width:25px; height:25px;"></div>
+	<div class="icon-database" onclick="doc_save()" style="width:25px; height:25px;"></div>
 	<button id="bold">bold</button>
 	<button id="h3">h3</button>
-	<button id="link">link</button>
+	<!-- button id="link">link</button>
+	<button id="doc_save">保存</button -->
 	<button id="chara">文字変更</button>
         <button id="trig1">選択1</button>
 	<button id="trig2">選択2</button>
         <div id="cp01" onclick="cmanCP_JS_open(this)" cmanCPat="def_color:val=sample1,def_alpha:0,rc_text:sample1,rc_form:#16,rc_bg:cp01"></div>
-        <input type='text' value="#0000ff" id="sample1" onchange="check_color()">
+        <input type='text' value="#0000ff" id="sample1" style="width:60px; height:25px;" onchange="check_color()">
+	<input type="file" id="selfile">
     </div>
   <ul id="canvasmenu">
     <li class="menuicon" id="size14px">14</div>
@@ -128,13 +137,8 @@
     <div class="tab-pane" id="tab1"><!-- Start tab1 -->
 	<!--canvas id="myCanvas" class="canv" ></canvas -->
         <svg id="myCanvas" class="canv" width="1000" height="1000" viewBox="10 50 1000 1000" xmlns="http://www.w3.org/2000/svg">
-		<svg xmlns="http://www.w3.org/2000/svg" >
-    		<path fill="none" stroke="blue" stroke-width="20" d="M 0 10 L 100 250 L 200 10" />
-    		<rect fill="pink" stroke="red" stroke-width="5" x="50" y="200" width="250" height="50" />
-    		<circle fill="yellow" stroke="green" stroke-width="10" cx="100" cy="150" r="80" / >
-		</svg>
 	</svg>
-	<div class="Tvis" id="texx" contenteditable="true"></div>
+	<div class="Tvis" id="texx" contenteditable="flase"></div>
     </div><!-- End tab1 -->
     <div class="tab-pane active" id="tab2"><!-- Start tab2 -->
        <textarea class="Thtm" id="texh" contenteditable="false"></textarea>
@@ -149,9 +153,6 @@
     var mouse_Error=false;
 
     var container = document.getElementById('myCanvas');
-//    var control = document.getElementById('control');
-//    var omit = document.getElementById('omit');
-//    var omitLabel = document.getElementById('omit-label');
     var clear = document.getElementById('clear');
 
     var sw_flag=10;
@@ -184,7 +185,8 @@ var sel = window.getSelection();
 //      range.insertNode(newNode);
     }
 
-    link.onclick = function() {
+function link() {
+//    link.onclick = function() {
 //const selectedText = window.getSelection().toString();
 //console.log(selectedText);
   var sel = window.getSelection();
@@ -269,10 +271,10 @@ function check_color() {
 	    setTimeout("check_color()",200);
 	    }
 }
-/*
+
     chara.onclick = function() {
 const selectedText = window.getSelection().toString();
-colval=document.getElementById("col").value;
+colval=document.querySelector('#trig1').style.backgroundColor;
 console.log('Sel_text=',selectedText,'color=',colval);
 
 var sel = window.getSelection();
@@ -288,8 +290,101 @@ var sel = window.getSelection();
 //  range.surroundContents(span);
 
     }
-*/
+/*          Ajax POST で必要となるか？？？？？？？？？？？
+ function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
 
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+$.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+*/
+function SVG_select() {
+
+}
+
+function doc_save() {
+//    doc_save.onclick = function() {
+console.log('*** SAVE　Entered  Direct to server ***');
+	var tex_to_serv=escapeHtml(escape(document.getElementById("texx").innerHTML));
+	var svg_tags=document.querySelector('#myCanvas');
+console.log('**Svg_tag length=',svg_tags.childElementCount);
+	svg_tag=''
+	for (nn = 0; nn < svg_tags.childElementCount; nn++) {
+		svg_tag=svg_tag+svg_tags.children[nn].outerHTML+'|<=>|';
+console.log('***list n =',nn,' length = ', svg_tag.length);
+		}
+	var svg_tag=escapeHtml(escape(svg_tag));
+console.log('svg_tag',svg_tag);
+console.log(tex_to_serv);
+        $.ajax({
+            url: "/db_serv/update/",
+            data: {
+		"description":tex_to_serv,
+		"svg":svg_tag,
+		},
+            dataType: 'json'
+        })
+        .done((data) => {
+            //結果が帰ってきたら、表示します。
+            //$('#answer').html('<span class="flower-answer-text">' + data['result'] + '</span>');
+console.log('**Ajax Returned result=',data);
+        });
+   }
+
+/* SVGfileの読み込み　　　　　　　　　　　　　*/
+　　var obj1 = document.getElementById("selfile");
+　　//ダイアログでファイルが選択された時
+　　obj1.addEventListener("change",function(evt){
+  　var file = evt.target.files;
+　　//FileReaderの作成
+  　var reader = new FileReader();
+  　//テキスト形式で読み込む
+  　reader.readAsText(file[0]);
+  　
+  　//読込終了後の処理
+  　reader.onload = function(ev){
+    //テキストエリアに表示する
+    //document.test.txt.value = reader.result;
+
+　　//const svgText = SVGData;
+　　//svgText=document.test.txt.value;
+　　svgText = reader.result;
+　　const domParser = new DOMParser();
+　　const parsedSVGDoc = domParser.parseFromString(svgText, 'image/svg+xml');
+　　console.log(parsedSVGDoc.childNodes[0]);
+　　const parsedSVG = parsedSVGDoc.childNodes[0];
+ 
+　　//htmlのSVG
+　　const svg = document.querySelector('#myCanvas');
+　　//生成したSVGをhtmlにそのまま入れる
+　　svg.appendChild(parsedSVG);
+  　　}
+　　},false);
+//
     var isDrawing = false;
     var drawingPoints=[];
     var drawingPath=null;
@@ -298,11 +393,13 @@ var sel = window.getSelection();
     var defaultPathStyle = {
         strokeWidth: "3px",
         stroke: "#000",
+        strokelinecap:"round",
         fill: "none",
     };
     var defaultPointStyle = {
         strokeWidth: "1px",
         stroke: "red",
+	strokelinecap:"round",
         fill: "none",
     };
     var tempoPathStyle = {
@@ -338,15 +435,15 @@ var sel = window.getSelection();
 		clickCount=0;
 		Up_count=0;
 
-	if ((Editmode=='Svg')&&(mode=='dblclick')) {
+	if ((E_mode=='Edit')&&(Editmode=='Svg')&&(mode=='dblclick')) {
 		dbl_click_func(e);
 	}
-	if ((Editmode=='Svg')&&(mode=='click')){
+	if ((E_mode=='Edit')&&(Editmode=='Svg')&&(mode=='click')){
 		click_func(e);
 	}
 
 	if ((Editmode=='Tvis')&&(mode=='click')){
-		Text_edit();
+//		Text_edit();
 	}
 }
 
@@ -357,27 +454,43 @@ var sel = window.getSelection();
         menuIcon[i].addEventListener("click", canvasMenu, false)
     }
 
-//    target1 = document.getElementById("texx");
-    document.getElementById("texx").innerHTML = "<p><h1>SVGの埋め込み</h1></p>"+
-    "<p><h2>これは、SVGをインラインで埋め込んだものです。</h2></p>"+
-    "<p><h3>svgタグはHTMLの要素として用意されて"+
-        "おり、一般のHTMLタグと同じ感覚で記述できます。</h3></p>"+
-    '<p>style="position:absolute"を指定することで、'+
-        "グラフィックとその他のHTML要素を重ねて表示させる"+
-        "ことも自由に行えるようになります。</p>"+
-     '<p>style="position:absolute"を指定することで、'+
-        "グラフィックとその他のHTML要素を重ねて表示させる"+
-        "ことも自由に行えるようになります。</p>";
-
+//　ブラウザ表示用データの準備
+      var texxx=unescapeHtml(unescape("{{view_tex}}"));
+      document.getElementById("texx").innerHTML=texxx;
+      var svg_tex=unescapeHtml(unescape("{{svg_field}}"));
+//console.log('**svg length=',svg_tex.length,' tex=',svg_tex);
+      if(svg_tex!=''){
+　　　　　const svg = document.querySelector('#myCanvas');
+	  var n_s=0;
+	  var i=0;
+	  var n_last=svg_tex.length;
+	  do {
+             i = i + 1;
+      	     n_e = svg_tex.indexOf('|<=>|',n_s );
+	     if(n_e<0) {
+		n_e=n_last;
+		}	     
+console.log('num=',i,' n_start and n_last=',n_s,n_e,n_last);
+	     text_n=svg_tex.substring(n_s , n_e);
+console.log('num= ',i,' tex= ',text_n)
+	     n_s=n_e+5;
+             const domParser = new DOMParser();
+　　	     parsedSVGDoc = domParser.parseFromString(text_n, 'image/svg+xml');
+   	     parsedSVG = parsedSVGDoc.childNodes[0];
+　　	     svg.appendChild(parsedSVG);
+	     svg.lastChild.outerHTML=text_n
+	     } while (n_s < n_last);
+	  }
 		Editmode="Tvis";
+		E_mode="Display";
 		nodisp=document.getElementById('tab2');
        		nodisp.style.display='none';
        		disp=document.getElementById('tab1');
        		disp.style.display='block';
 //document.getElementById("bbb").style.display="block";
 document.getElementById("myCanvas").style.display="block";
-　　　　　　	document.getElementById("texh").contentEditable = false;
-　　　　　　	document.getElementById("texx").contentEditable = true;
+//　　　　　　	document.getElementById("texh").contentEditable = false;
+//　　　　　　	document.getElementById("texx").contentEditable = false;
 		document.getElementById( "texx" ).style.zIndex ='40';
 		document.getElementById( "texh" ).style.zIndex ='20';
 //		document.getElementById( "myCancas" ).style.zIndex ='20';
@@ -665,8 +778,15 @@ console.log('line mouseup');
 		}
     });
 
-    function Text_edit(){
-console.log("Enter Text EditMode")
+    function edit_mode(){
+console.log("Enter Text EditMode");
+	if(document.selbox.edit.selectedIndex==1){
+		E_mode="Edit";
+		}
+	else {
+		E_mode="Display";		
+	}
+	chng_mode();
     }
 
     function createFirstPoint(points) {
@@ -817,10 +937,11 @@ console.log('fillStyle=',ctx.fillStyle);
      }
     }
 
-function sample(){
+function chng_mode(){
+console.log('**Enter change mode**',E_mode,'  ',Editmode)
     //選択したf_editによって分岐
     switch (document.selbox.fgedit.selectedIndex){
-      case 0: 
+      case 0:               //     Visual mode
 		Editmode="Tvis";
 		nodisp=document.getElementById('tab2');
        		nodisp.style.display='none';
@@ -829,11 +950,14 @@ function sample(){
 //document.getElementById("bbb").style.display="block";
 document.getElementById("myCanvas").style.display="block";
 　　　　　　	document.getElementById("texh").contentEditable = false;
-　　　　　　	document.getElementById("texx").contentEditable = true;
+　　　　　　	document.getElementById("texx").contentEditable = false;
 		document.getElementById( "texx" ).style.zIndex ='40';
 		document.getElementById( "texh" ).style.zIndex ='20';
 //		document.getElementById( "myCancas" ).style.zIndex ='20';
 		document.getElementById("texx").innerHTML=document.getElementById("texh").value;
+		if(E_mode=='Edit') {
+			document.getElementById("texx").contentEditable = true;
+			}
 		break;
       case 1: 
 		Editmode="Thtm";
@@ -843,12 +967,15 @@ document.getElementById("myCanvas").style.display="block";
         	disp.style.display='block';
 //document.getElementById("bbb").style.display="none";
 document.getElementById("myCanvas").style.display="none";
-　　　　　　	document.getElementById("texh").contentEditable = true;
+　　　　　　	document.getElementById("texh").contentEditable = false;
 　　　　　　	document.getElementById("texx").contentEditable = false;
 		document.getElementById( "texh" ).style.zIndex ='40';
 		document.getElementById( "texx" ).style.zIndex ='20';
 //		document.getElementById( "myCancas" ).style.zIndex ='30';
 		document.getElementById("texh").value=document.getElementById("texx").innerHTML;
+		if(E_mode=='Edit') {
+			document.getElementById("texh").contentEditable = true;
+			}
 		break;
       case 2: 
 //		Editmode="None";
@@ -862,8 +989,12 @@ document.getElementById("myCanvas").style.display="block";
 　　　　　　	document.getElementById("texh").contentEditable = false;
 　　　　　　	document.getElementById("texx").contentEditable = false;
 		document.getElementById( "texh" ).style.zIndex ='10';
-		document.getElementById( "texx" ).style.zIndex ='10';
-//		document.getElementById( "myCancas" ).style.zIndex ='30';
+		document.getElementById( "texx" ).style.zIndex ='40';
+//		document.getElementById( "myCancas" ).style.zIndex ='10';
+		if(E_mode=='Edit') {
+			document.getElementById( "texx" ).style.zIndex ='10';
+			}
+		
 		break;
     }
 }
@@ -874,9 +1005,37 @@ function sleep(waitMsec) {
   // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
   while (new Date() - startMsec < waitMsec);
 }
-
-
-
+function escapeHtml(convertString) {
+    if (typeof convertString !== 'string') return convertString;
+ 
+    var patterns = {
+        '<'  : '&lt;',
+        '>'  : '&gt;',
+        '&'  : '&amp;',
+        '"'  : '&quot;',
+        '\'' : '&#x27;',
+        '`'  : '&#x60;'
+    };
+ 
+    return convertString.replace(/[<>&"'`]/g, function(match) {
+        return patterns[match];
+    });
+};
+function unescapeHtml(target) {
+    if (typeof target !== 'string') return target;
+ 
+    var patterns = {
+        '&lt;'   : '<',
+        '&gt;'   : '>',
+        '&amp;'  : '&',
+        '&quot;' : '"',
+        '&#x27;' : '\'',
+        '&#x60;' : '`'
+    };
+ 
+    return target.replace(/&(lt|gt|amp|quot|#x27|#x60);/g, function(match) {
+        return patterns[match];
+    });
+};
 </script>
-
 </html>

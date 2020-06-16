@@ -5,3 +5,6 @@ db.sqlite3
 my_db/db_serv/migrations/
 my_db/db_serv/__pycache__/
 my_db/media/
+svg/
+bstemp_analytics.html
+bezier_spline.txt

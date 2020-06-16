@@ -10,7 +10,8 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('detail/', views.detail, name='detail'),
+    path('detail/<int:data_id>/', views.detail, name='detail'), 
+    path('update/', views.update, name='update'),
     path('file_upload/', views.file_upload, name='file_upload'),
 ]
 

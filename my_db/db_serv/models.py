@@ -13,10 +13,15 @@ class My_Data(models.Model):
     overview = models.TextField('概要', blank=True)
     description = models.TextField('詳細', blank=True)
     keywords = models.TextField('KeyWd', blank=True)
+    
+class My_Svg(models.Model):
+    # TODO: Define fields here
+    no = models.IntegerField('番号', blank=True, null=True)
+    svg_tags = models.TextField('SVG', blank=True) 
 
     class Meta:
-        verbose_name = '記録メモ'
-        verbose_name_plural = '記録メモ一覧'
+        verbose_name = 'SVG付き記録メモ'
+        verbose_name_plural = 'SVG付き記録メモ一覧'
 
     def __unicode__(self):
         return(self.name)
