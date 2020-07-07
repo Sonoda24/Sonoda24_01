@@ -1,11 +1,13 @@
 # Create your views here.
 from django.http import HttpResponseRedirect
+from django.template import Context, loader
 from django.shortcuts import render
 from .forms import UploadFileForm
 from .models import My_Data
 from .models import My_Svg
 from django.http import HttpResponse
 from django.http import Http404
+from django.http import JsonResponse
 import os, csv
 import sys
 import re
@@ -14,12 +16,60 @@ from six import unichr
 
 db_data=''
 svg_data=''
-
 # ------------------------------------------------------------------
 def index(request):
-    latest_list = My_Data.objects.order_by('no')[:10]
+    context = {}
+    return render(request,'db_serv/index.html',context)
+# ------------------------------------------------------------------
+def list(request):
+    latest_list = My_Data.objects.order_by('no')[:100]
     context = {'latest_list': latest_list}
-    return render(request, 'db_serv/index.html',context)
+    return render(request, 'db_serv/list.html',context)
+# ------------------------------------------------------------------
+def new_list(request):
+    context = {}
+    return render(request, 'db_serv/new_list.html',context)
+# ------------------------------------------------------------------
+def get_combo(request):
+    tex = request.GET.get("message")
+    print("**get_combo** recieve "+ tex);
+    result = My_Data.objects.all().order_by('no')
+    print('records = ',result.count())
+    i=0
+    for data in result:
+        if(i==0):
+            gMydbid=str(data.no)
+            gComboA=data.theme
+            gComboB=data.bunrui1
+            gComboC=data.bunrui2
+            gComboD=data.bunrui3
+            gComboE=data.day_regist
+            gComboF=data.overview
+        else:
+            #print(' record=',data.no,data.theme,data.overview)
+            gMydbid=gMydbid+";,;"+str(data.no)
+            gComboA=gComboA+";,;"+data.theme
+            gComboB=gComboB+";,;"+data.bunrui1
+            gComboC=gComboC+";,;"+data.bunrui2
+            gComboD=gComboD+";,;"+data.bunrui3
+            gComboE=gComboE+";,;"+data.day_regist
+            gComboF=gComboF+";,;"+data.overview
+        i=i+1
+
+    context = {
+	'no':gMydbid,
+	'theme':gComboA,
+	'bunrui1':gComboB,
+	'bunrui2':gComboC,
+	'bunrui3':gComboD,
+	'day_regist':gComboE,
+	'overview':gComboF,
+        }
+#    print('** theme data **',gComboA);
+    return JsonResponse(context)
+#    return HttpResponse(context)
+#    return render(request, '',context)
+#    return render(request, 'db_serv/get_combo.html',context)
 # ------------------------------------------------------------------
 def detail(request, data_id):
     global db_data,svg_data
@@ -46,7 +96,6 @@ def detail(request, data_id):
 #]
 def update(request):
     global db_data,svg_data
-#    t = Todo.objects.get(todo_id=1)
     tex = request.GET.get("description")
     svg_field = request.GET.get("svg")
     svg_field=svg_field.strip()

@@ -1,4 +1,4 @@
-"""proj01 URL Configuration
+﻿"""proj01 URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.0/topics/http/urls/
@@ -22,4 +22,5 @@ urlpatterns = [
     path('success/url/',db_serv.success),
     path('db_serv/',include('db_serv.urls')),
     path('admin/', admin.site.urls),
+    path('',include('db_serv.urls')),
 ]

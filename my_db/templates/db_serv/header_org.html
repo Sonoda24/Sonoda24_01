@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>機械学習・深層学習デモウェブアプリ</title>
+    <!-- jQuery  -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+
+    <!-- BootStrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+
+    <!-- App JS  -->
+    <script src="/static/js/app.js"></script>
+
+    <!-- BootStrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/app.css">
+
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
+          integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP"
+          crossorigin="anonymous">
+
+</head>
+<body onload="initOnLoad();">
+	<div id="header" class="container" style="object-fit: cover; max-height=500px;">
+
+		<h1><!-- a href="<?php echo home_url('/'); ?>"><?php bloginfo('name'); ?></a -->
+	     <div style="position:relative; top:100px; left:20px;">
+		<!-- img src="./wp-content/themes/attitude_child/logo3.svg" width="100" height="100" alt="ロゴsvg" -->
+		<img src="<?php echo get_template_directory_uri(); ?>/images/mylogo.svg" width="125" height="125" alt="ロゴsvg">
+	     </div>
+	<svg xmlns="http://www.w3.org/2000/svg" width="auto" height="180px" viewBox="0 0 500 180"> <!-- xmlns:xlink="http://www.w3.org/1999/xlink"-->
+                       <defs>
+				<g id="title" stroke-width="10" stroke-linejoin="round">
+					<text display="inline" x="18%" y="30%" text-anchor="right" dominant-baseline="middle" font-size="36px">楽しく <tspan font-size="40px">Python</tspan>プログラミング</text>
+					<text display="none" x="18%" y="30%" text-anchor="right" dominant-baseline="middle" font-size="36px">気ままに  </tspan><tspan font-size="40px">Python</tspan>プログラミング</text>
+					<text x="70%" y="75%" text-anchor="middle" dominant-baseline="middle" fill="blue" font-size="20" stroke-width="1" stroke="blue">磐田市大泉町のプログラミング教室</text>
+                                 </g>
+                        </defs>
+			<title>タイトル</title>
+			<use xlink:href="#title" stroke="rgb(128,160,160)" fill="none" stroke-width="10" stroke-linejoin="round"/>
+			<use xlink:href="#title" fill="white"/>
+        </svg>
+		</h1>
+		<!-- ul id="navvb">
+   			<li><a href="#"><span class="jp">スマートワークス</span><span class="en">SMARTWORKS</span></a></li>
+   			<li><a href="#"><span class="en">profile</span><span class="jp">プロフィール</span></a></li>
+ 		</ul -->
+		<!-- ?php wp_nav_menu(); ? -->
+	</div><!-- /header -->
+{% include 'db_serv/navbar.html' %}
+<br/>
+<div class="container">
