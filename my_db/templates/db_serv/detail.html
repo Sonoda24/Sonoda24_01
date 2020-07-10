@@ -1,141 +1,39 @@
-﻿{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>SVG Editor</title>
-  <meta charset="utf-8">
-  <meta http-equiv="content-type" content="text/html;charset=utf-8">
-  <!--Bootstrap４に必要なCSSとJavaScriptを読み込み-->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  <link rel="stylesheet" href="{% static 'icomoon/style.css' %}">
-  <!-- script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script -->
-  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/canvg/1.5/canvg.js"></script>
-  <script type="text/javascript" src="{% static 'js/cmanCP_v091.js' %}"></script>
-    <style>
-        body {
-            margin: 0;
-            width: 100%;
-            height: 1000px;
-        }
-        
-        .tool {
-            position: absolute;
-	    left: 20px; top: 0px;
-  	    display: flex;
-        }
-#canvasmenu {
-  position: absolute;
-  left: 20px; top: 25px;
-  list-style: none;
-  display: flex;
-}
-#canvasmenu li {
-  width: 20px;
-  text-align: center;
-  background-color: #f5f5f5;
-  height: 20px;
-  line-height: 20px;
-  margin-right: 2px;
-}
-.Thtm {
-  position: absolute;
-  left: 0px; top: 50px;
-  padding:0 10px 0 10px;
-  width: 1200px;
-  height: 2000px;
-}
-.Tvis {
-  position: absolute;
-  left: 0px; top: 50px;
-  padding:0 10px 0 10px;
-  width:1000px;
-  height:1000px;
-  z-index: 30;
-  background-color:"red";
-  opacity: 0.;  
-}
-.canv {
-  z-index:20;
-  padding:0 10px 0 10px;
-  width:1000px;
-  position: absolute;
-  left: 10px; top:50px;
-    opacity: 0.;  
-}
-
-#trig1{
-	height:25px;
-        background-color:#ffffdd;
-}
-#trig2{
-	height:25px;
-        background-color:#ffffdd;
-}
-    </style>
-</head>
+﻿{% include 'db_serv/detail_header.html' %}
 <body>
-    <div class="tool">
+<div class="container-fluid">
+	<!-- メインメニュー -->
+        <nav class="navbar navbar-expand-sm bg-primary navbar-light">
+	<ul class="navbar-nav">
+		<li class="nav-item" id="menuB01"><a class="nav-link" href="#!" onclick="check_prev()">Prev</a></li>
+		<li class="nav-item" id="menuB02"><a class="nav-link text-white" href="#!" onclick="check_next()">Next</a></li>
+		<li class="nav-item" id="menuB03"><a class="nav-link text-white" href="#!" onclick="copy_add()">Copy新規</a></li>
+		<li class="nav-item" id="menuB04"><a class="nav-link text-white" href="#!" onclick="new_add()">新規</a></li>
+		<li class="nav-item" id="menuB05"><a class="nav-link text-white" href="#!" onclick="setedit_disable()">変更</a></li>
+		<li class="nav-item" id="menuB06"><a class="nav-link text-white" href="#!" onclick="submit_save()">保存</a></li>
+		<li class="nav-item" id="menuB07"><a class="nav-link text-white" href="#!" onclick="submit_del()">削除</a></li>
+		<li class="nav-item" id="menuB08"><a class="nav-link" href="#!" onclick="rn_displaydb()">戻る</a></li>
+	</ul>
+	</nav>
+
+      <div class="col-sm-3 sidenav" style="line-height: 0.8em"> <!-- Start sidenav -->
+        <h4>Search and Data Table</h4>
+
+	<!-- サブメニュー（左カラム） -->
 	<form name="selbox">
-	<select name="edit" onchange="edit_mode()" style="width:60px; height:25px;" ></p>
-	<option value="">Display</option>
-	<option value="">Edit</option>
-	</select>
-	<select name="fgedit" onchange="chng_mode()" style="width:60px; height:25px;" ></p>
-	<option value="">Visual</option>
-	<option value="">Html</option>
-	<option value="">Svg</option>
-	<option value="">Mod Svg</option>
-	</select>
+	<p><label>課題名</label><br>
+	<select id="comboboxA" onchange="changeCombA()" style="height:25px; width:180px;"></select>
+	<p><label>大分類</label><br>
+	<select id="comboboxB"  onchange="changeCombB()" style="height:25px; width:180px;"></select>
+	<p><label>中分類</label><br>
+	<select id="comboboxC"  onchange="changeCombC()" style="height:25px; width:180px;"></select>
+	<p><label>小分類</label><br>
+	<select id="comboboxD"  onchange="changeCombD()" style="height:25px; width:180px;"></select>
 	</form>
-        <button id="clear">clear</button>
-        <select name="control" id="control">
-    		<option value="line">serial line</option>
-    		<option value="close_line">closed line</option>
-		<option value="cubic_bezier">smooth</option>
-		<option value="cubic_bezier">closed smooth</option>
-		<option value="quad_bezier">quad bezier</option>
-		<option value="cubic_bezier">cubic bezier</option>
-    		<option value="free_line">free line</option>
-  	</select>
-	<!-- span class="icon-link" style="width:25px; height:25px;"></span>
-	<span class="icon-database" style="width:25px; height:25px;"></span -->
-	<!--button id="link" class="icon-link" style="width:25px; height:25px;"></button>
-	<button id="doc_save" class="icon-database" style="width:25px; height:25px;"></button -->
-	<div class="icon-link" onclick="link()" style="width:25px; height:25px;"></div>
-	<div class="icon-database" onclick="doc_save()" style="width:25px; height:25px;"></div>
-	<button id="bold">bold</button>
-	<button id="h3">h3</button>
-	<button id="select">Msvg</button>
-	<!--button id="doc_save">保存</button -->
-	<button id="chara">文字変更</button>
-        <button id="trig1">選択1</button>
-	<button id="trig2">選択2</button>
-        <div id="cp01" onclick="cmanCP_JS_open(this)" cmanCPat="def_color:val=sample1,def_alpha:0,rc_text:sample1,rc_form:#16,rc_bg:cp01"></div>
-        <input type='text' value="#0000ff" id="sample1" style="width:60px; height:25px;" onchange="check_color()">
-	<input type="file" id="selfile">
-    </div>
-  <ul id="canvasmenu">
-    <li class="menuicon" id="size14px">14</div>
-    <li class="menuicon" id="size7px">7</div>
-    <li class="menuicon" id="size5px">5</div>
-    <li class="menuicon" id="size3px">3</div>
-    <li class="menuicon" id="size2px">2</div>
-    <li class="menuicon" id="size1px">1</div>
-    <li class="menuicon" id="colore91e63" style="background-color:#e91e63">○</div>
-    <li class="menuicon" id="colorffeb3b" style="background-color:#ffeb3b">○</div>
-    <li class="menuicon" id="colorff4801" style="background-color:#ff4801">○</div>
-    <li class="menuicon" id="color536dfe" style="background-color:#536dfe">○</div>
-    <li class="menuicon" id="color009688" style="background-color:#009688">○</div>
-    <li class="menuicon" id="color00e676" style="background-color:#00e676">○</div>
-    <li class="menuicon" id="color555555" style="background-color:#555555">○</div>
-    <li class="menuicon" id="alpha10" style="background-color:rgba(255,72,1, 1.0)">10</div>
-    <li class="menuicon" id="alpha6" style="background-color:rgba(255,72,1, 0.6)">6</div>
-    <li class="menuicon" id="alpha3" style="background-color:rgba(255,72,1, 0.3)">3</div>
-    <li class="menuicon" id="alpha1" style="background-color:rgba(255,72,1, 0.1)">1</div>
-  </ul>
+
+      </div><!-- End sidenav -->
+
+
+
   <div class="main tab-content"><!-- Start main tab-content -->
     <div class="tab-pane" id="tab1"><!-- Start tab1 -->
 	<!--canvas id="myCanvas" class="canv" ></canvas -->
@@ -147,9 +45,318 @@
        <textarea class="Thtm" id="texh" contenteditable="false"></textarea>
     </div><!-- End tab2 -->
   </div><!-- End main tab-content -->
-<!--/div><!-- End container-fluid -->
+</div><!-- End container-fluid -->
 </body>
 <script>
+//最初の処理は検索　index.htmlでDB全体読み込みと検索用変数をsessionStorageに作成済
+   var edit_mode="Search";
+   var Last_mode="Search";
+   var Editable=false;
+   var To_return="home";
+
+  var gCode="initial";
+  var key = 'my_session';
+  var key1 = 'read_data';
+    // 初回以外の処理（Session Storageに記憶されている場合)
+	var DataA = JSON.parse( sessionStorage.getItem("jsonsA") );
+	var DataB = JSON.parse( sessionStorage.getItem("jsonsB") );
+	var DataC = JSON.parse( sessionStorage.getItem("jsonsC") );
+	var DataD = JSON.parse( sessionStorage.getItem("jsonsD") );
+	var DataE = JSON.parse( sessionStorage.getItem("jsonsE") );
+	var DataF = JSON.parse( sessionStorage.getItem("jsonsF") );
+	var Dataid = JSON.parse( sessionStorage.getItem("jsonsid") );
+	var delflag = JSON.parse( sessionStorage.getItem("jsonsfg") );
+	var dispflag = JSON.parse( sessionStorage.getItem("jsonsdisp") );
+	var nlist=DataA.length;
+//console.log('Theme=',JSON.stringify(DataA));
+//console.log('bunrui1=',JSON.stringify(DataB));
+
+	var Selbox =　JSON.parse( sessionStorage.getItem("jsonsSel") );
+	var selA_value=Selbox[0];
+	var selB_value=Selbox[1];
+	var selC_value=Selbox[2];
+	var selD_value=Selbox[3];
+	var n_present=Number(Selbox[4]);       //現在の原稿　present　data
+	var k_table=Number(Selbox[5]);         //Print Tableの何番目か
+	To_return=Selbox[6];
+	Last_mode=Selbox[7];
+console.log('jsonparse Selbox',Selbox,'selA=',selA_value,selB_value,selC_value,selD_value);
+console.log('nlist=',nlist,'n_present=',n_present,' rec_num=',Dataid[dispflag[n_present]],' k_table=',k_table,'To_return=',To_return,'Last_mode=',Last_mode);
+
+//Searchタブ及びEditタブに共通の処理
+//　DBデータ（読み込まれた/sessionstorageに記憶された）よりコンボデータを作成する
+   var gDataComboboxA = [{ id: 0, value: "" }];
+   var gDataComboboxB = [{ id: 0, value: "" }];
+   var gDataComboboxC = [{ id: 0, value: "" }];
+   var gDataComboboxD = [{ id: 0, value: "" }];
+
+// 重複の無い最上位（課題名ComboboxA）のコンボデータを作る
+   for(var i=1;i<DataA.length;i++){
+	var fg=1;
+	var j=1;
+//console.log('i',i,'aleng',gDataComboboxA.length,'ComboA',gDataComboboxA);
+	while(j<gDataComboboxA.length){
+//console.log('ind',j,'value',gDataComboboxA[j].value,'data',DataA[i]);
+		if (gDataComboboxA[j].value==DataA[i]) {
+				fg=0;
+				break;
+				}
+		j++;
+	}
+	if (fg==1) {
+		var item = new Object();
+		item.id = i; // input value
+		item.value = DataA[i];
+		gDataComboboxA.push(item);
+	}
+   }
+//	console.log(gDataComboboxA);
+   var box1 = new SelectBox("comboboxA");
+   box1.registOption(new SelectOption(null, "課題名", "0", "color:gray;"));
+   for (var i=1; i<gDataComboboxA.length; i++) {
+	box1.registOption(new SelectOption(null, gDataComboboxA[i].value , String(gDataComboboxA[i].id)));
+	}
+//上で定義したcomboboxA（box1）のObject骨格をつくる
+  box1.make(null);
+console.log('comboboxA=',comboboxA);
+
+console.log("Last mode=",Last_mode,"edit_mode=",edit_mode);
+//
+//Searchタブの処理
+//直前の選択項目に基づいたcomboboxをsetする
+	if ((selA_value!="")&&(selA_value!="課題名")) {
+		var coma=document.getElementById("comboboxA");
+console.log('SelA=',selA_value,'coma=',coma);
+		coma.selectedIndex=0;
+		for(i=1;i<coma.length;i++){
+			coma.selectedIndex=i;
+			if(selA_value==coma.options[i].label)　{
+				break;
+			}
+		}
+		changeCombA();
+		Search_level=1;
+	}
+	if ((selB_value!="")&&(selB_value!="大分類")) {
+		var comb=document.getElementById("comboboxB");
+console.log('SelB=',selB_value,'comb=',comb);
+		comb.selectedIndex=0;
+		for(i=1;i<comb.length;i++){
+			comb.selectedIndex=i;
+			if(selB_value==comb.options[i].label)　{
+				break;
+			}
+		}
+		changeCombB();
+		Search_level=2;
+	}
+	if ((selC_value!="")&&(selC_value!="中分類")) {
+		var comc=document.getElementById("comboboxC");
+		comc.selectedIndex=0;
+		for(i=1;i<comc.length;i++){
+			comc.selectedIndex=i;
+			if(selC_value==comc.options[i].label)　{
+				break;
+			}
+		}
+		changeCombC();
+		Search_level=3;
+	}
+	if ((selD_value!="")&&(selD_value!="小分類")) {
+		var comd=document.getElementById("comboboxD");
+		comd.selectedIndex=0;
+		for(i=1;i<comd.length;i++){
+			comd.selectedIndex=i;
+			if(selD_value==comd.options[i].label)　{
+				break;
+			}
+		}
+		Search_level=4;
+	}
+
+//検索画面 combobox ComboB onchange function
+function changeCombA() {
+  
+  var selA=document.selbox.comboboxA.selectedIndex;
+  var selA_id=document.selbox.comboboxA.value;
+  selA_value=document.selbox.comboboxA.options[selA].label;
+console.log('**SelectA',selA,selA_id,selA_value);
+	var gDataComboboxB = [{ id: 0, value: "" }];
+// 重複の無いコンボデータを作る
+	for(var i=1;i<DataB.length;i++){
+		var fg=1;
+		var j=1;
+//console.log('i',i,'aleng',gDataComboboxA.length,'ComboA',gDataComboboxA);
+		while(j<gDataComboboxB.length){
+//console.log('ind',j,'value',gDataComboboxA[j].value,'data',DataA[i]);
+		  if (gDataComboboxB[j].value==DataB[i]) {
+					fg=0;
+					break;
+					}
+			j++;
+		}
+		if ((fg==1)&&(DataA[i]==selA_value)) {
+console.log('**registered ',DataA[i],DataB[i]);
+			var item = new Object();
+			item.id = i; // input value
+			item.value = DataB[i];
+			gDataComboboxB.push(item);
+		}
+	}
+//	console.log(gDataComboboxA);
+var box2 = new SelectBox("comboboxB");
+box2.registOption(new SelectOption(null, "大分類", "0", "color:gray;"));
+			　　for (var i=1; i<gDataComboboxB.length; i++) {
+				box2.registOption(new SelectOption(null, gDataComboboxB[i].value , String(gDataComboboxB[i].id)));
+				}
+  box2.make(null);　
+
+var box3 = new SelectBox("comboboxC");
+box3.registOption(new SelectOption(null, "中分類", "0", "color:gray;"));
+  box3.make(null);
+
+var box4 = new SelectBox("comboboxD");
+box4.registOption(new SelectOption(null, "小分類", "0", "color:gray;"));
+  box4.make(null);
+  Search_level=1;
+  if(selA_value=="課題名")　Search_level=0;
+  return;
+};
+// combobox ComboC onchange function
+function changeCombB() {
+  
+  var selB=document.selbox.comboboxB.selectedIndex;
+  var selB_id=document.selbox.comboboxB.value;
+  selB_value=document.selbox.comboboxB.options[selB].label;
+console.log('**SelectB',selB,selB_id,selB_value);
+
+	var gDataComboboxC = [{ id: 0, value: "" }];
+// 重複の無いコンボデータを作る
+	for(var i=1;i<DataC.length;i++){
+		var fg=1;
+		var j=1;
+//console.log('i',i,'aleng',gDataComboboxA.length,'ComboA',gDataComboboxA);
+		while(j<gDataComboboxC.length){
+		  if (gDataComboboxC[j].value==DataC[i]) {
+					fg=0;
+					break;
+					}
+		  j++;
+		}
+		if ((fg==1)&&(DataA[i]==selA_value)&&(DataB[i]==selB_value)) {
+console.log('**registered ',DataA[i],DataB[i],DataC[i]);
+			var item = new Object();
+			item.id = i; // input value
+			item.value = DataC[i];
+			gDataComboboxC.push(item);
+		}
+	}
+//	console.log(gDataComboboxA);
+var box3 = new SelectBox("comboboxC");
+box3.registOption(new SelectOption(null, "中分類", "0", "color:gray;"));
+			　　for (var i=1; i<gDataComboboxC.length; i++) {
+				box3.registOption(new SelectOption(null, gDataComboboxC[i].value , String(gDataComboboxC[i].id)));
+				}
+  box3.make(null);　
+
+  var box4 = new SelectBox("comboboxD");
+  box4.registOption(new SelectOption(null, "小分類", "0", "color:gray;"));
+  box4.make(null);
+  Search_level=2;
+  if(selB_value=="大分類")　Search_level=1;
+  return;
+};
+// combobox ComboD onchange function
+function changeCombC() {
+  
+  var selC=document.selbox.comboboxC.selectedIndex;
+  var selC_id=document.selbox.comboboxC.value;
+  selC_value=document.selbox.comboboxC.options[selC].label;
+console.log('**SelectC',selC,selC_id,selC_value);
+
+	var gDataComboboxD = [{ id: 0, value: "" }];
+// 重複の無いコンボデータを作る
+	for(var i=1;i<DataD.length;i++){
+		var fg=1;
+		var j=1;
+//console.log('i',i,'aleng',gDataComboboxA.length,'ComboA',gDataComboboxA);
+		while(j<gDataComboboxD.length){
+		  if (gDataComboboxD[j].value==DataD[i]) {
+					fg=0;
+					break;
+					}
+		  j++;
+		}
+		if ((fg==1)&&(DataA[i]==selA_value)&&(DataB[i]==selB_value)&&(DataC[i]==selC_value)) {
+console.log('**registered ',DataA[i],DataB[i],DataC[i],DataD[i]);
+			var item = new Object();
+			item.id = i; // input value
+			item.value = DataD[i];
+			gDataComboboxD.push(item);
+		}
+	}
+//	console.log(gDataComboboxA);
+var box4 = new SelectBox("comboboxD");
+box4.registOption(new SelectOption(null, "小分類", "0", "color:gray;"));
+			　　for (var i=1; i<gDataComboboxD.length; i++) {
+				box4.registOption(new SelectOption(null, gDataComboboxD[i].value , String(gDataComboboxD[i].id)));
+				}
+  box4.make(null);　
+  Search_level=3;
+  if(selC_value=="中分類")　Search_level=2;
+  return;
+};
+function changeCombD() {
+  
+  var selD=document.selbox.comboboxD.selectedIndex;
+  var selD_id=document.selbox.comboboxD.value;
+  selD_value=document.selbox.comboboxD.options[selD].label;
+console.log('**SelectD Dindex=',selD,' id= ',selD_id,' value= ',selD_value);
+  Search_level=4;
+  if(selD_value=="小分類")　Search_level=3;
+  return;
+};
+
+//function transpose(a) {
+//    return Object.keys(a[0]).map(function(c) {
+//        return a.map(function(r) { return r[c]; });
+//    });
+//}
+
+
+   var nums=Dataid[dispflag[n_present]];
+console.log('read_rec num=',nums,' Dataid numb=',dispflag[n_present],' Table numb=',n_present);
+console.log('select record=',DataF[dispflag[n_present]]);
+	get_doc(nums);
+
+function get_doc(numb) {
+console.log('*** Ajax Start To get_record *** numb=',numb);
+//var csrf_token = getCookie("csrftoken");
+	var number=String(numb);
+        $.ajax({
+            url: "/db_serv/get_rec/",
+	    type: "GET",
+            data: {
+		"rec_number":numb,
+		},
+            dataType: 'json',
+        })
+        .done((data) => {
+		svg_clear()
+//console.log('**Ajax Returned result=',data);
+		view_tex=data.view_tex
+		svg_field=data.svg_field
+		show_view()
+        });
+   }
+function svg_clear(){
+    var container = document.getElementById('myCanvas');
+    var clear = document.getElementById('clear');
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+    }
+
     var clickCount = 0 ;
     var Up_count=0;
     var Move_mode=0;
@@ -159,280 +366,9 @@
     var clear = document.getElementById('clear');
     var mv_flag=10;
 
-    clear.onclick = function() {
-        while (container.firstChild) {
-            container.removeChild(container.firstChild);
-        }
-    }
-
-    bold.onclick = function() {
-    const selectedText = window.getSelection().toString();
-console.log(selectedText);
-
-    var sel = window.getSelection();
-    if(!sel.rangeCount) return; //範囲選択されている箇所がない場合は何もせず終了
-
-    var range = sel.getRangeAt(0);　　　　　　　　　　　//　OK!!
-    var newNode = document.createElement('b');
-    newNode.innerHTML =  sel.toString();   //選択文字列をnewNodeとして設定
-    range.deleteContents();    // 範囲選択箇所を一旦削除
-    range.insertNode(newNode); // 前後に<b>と</b>を入れる。
-    }
-
-  select.onclick = function() {
-    //htmlのSVG
-　　const svgtag = document.querySelector('#myCanvas');
-	var level=0;
-	svg_list(svgtag,level);	
-    }
-  function svg_list(svgtag,level){
-    level=level+1;
-    var leng=svgtag.children.length;
-console.log('svg_list level= ',level,'child leng= ',svgtag.children.length,svgtag);
-    for (var i=0 ;i<leng ;i++){
-	tagn=svgtag.children[i];
-console.log('**nodename= ',tagn.nodeName);
-	if(tagn.children.length) {
-		svg_list(tagn,level);
-		}
-	else {
-console.log('Svg text=',tagn.outerHTML);
-//		const domParser = new DOMParser();
-//    　　	const parsedSVGDoc = domParser.parseFromString(tagn.outerHTML, 'image/svg+xml');
-//console.log(parsedSVGDoc);
-
-//		var oDOM = domParser.parseFromString(tagn.outerHTML, "application/xml");
-// print the name of the root element or error message
-//console.log(oDOM.documentElement.nodeName == "parsererror" ? "error while parsing" : oDOM.documentElement.nodeName);
-//console.log(oDOM);
-//var oSerializer = new XMLSerializer();
-//var sXML = oSerializer.serializeToString(tagn);
-//console.log(sXML)
-//JavaScript 属性値を取得/設定/削除する(getAttribute)
-		attr_char=tagn.getAttribute("d"); 
-console.log('**attr= ',attr_char);
-		if(attr_char){
-			replaced = attr_char.replace(/-/g, ',-');
-console.log(replaced);
-			var result = replaced.split(/,|M|T|Q|q|S|s|C|c|L|l|Z/);     // '-'を分割文字にするとマイナス符号と見做さないのでまずい
-console.log('leng=',result.length,result);
-//(x,y)のペアを作りさらに形式を変えて（作図用）保存
-			r_val=[];
-			for ( var i = 0 ; i < result.length ; i++ ){
-				if (result[i]!="") {
-					val=Number(result[i]);
-					r_val.push(val);
-					}
-				}
-console.log('r_val=',r_val);
-			path_p=[];
-			result=splitArray(r_val,2);
-console.log('Result=',result,'r_val=',r_val);
-			for(var k=0; k<result.length;k++){
-				path_p.push({x: result[k][0],y: result[k][1]});
-				}
-console.log('path_p= ',path_p);
-//円を描いてみる
-			for(var k=0; k<path_p.length;k++){
-console.log(path_p[k]);
-				first_point=createFirstPoint([path_p[k]]);
-	        		Object.assign(first_point.style, defaultPointStyle);
-        			container.appendChild(first_point);
-				}
-			}
-		}
-	}
-    }
-
-  function link() {
-//console.log(selectedText);
-    var sel = window.getSelection();
-    if(!sel.rangeCount) return; //範囲選択されている箇所がない場合は何もせず終了
-
-    var range = sel.getRangeAt(0);　　　　　　　　　　　//　OK!!
-    var newNode =document.createElement('a');
-    var user = window.prompt("link先を入力してください", "");
-//console.log(user);
-    newNode.href = user;
-    newNode.innerHTML = sel.toString();   //tag部分に<>を含むと変更出来ない。
-    range.deleteContents();    // 範囲選択箇所を一旦削除
-    range.insertNode(newNode); 
-    }
-
-  h3.onclick = function() {
-    const selectedText = window.getSelection().toString();
-console.log(selectedText);
-
-    var sel = window.getSelection();
-    if(!sel.rangeCount) return; //範囲選択されている箇所がない場合は何もせず終了
-
-    var range = sel.getRangeAt(0);　　　　　　　　　　　//　OK!!
-    var newNode = document.createElement('h3');
-//  newNode.setAttribute('style', 'background-color: blue;'); //範囲選択箇所の背景を青にする
-    newNode.innerHTML = sel.toString();   //tag部分に<>を含むと変更出来ない。
-    range.deleteContents();    // 範囲選択箇所を一旦削除
-    range.insertNode(newNode); // 範囲選択箇所の先頭から、修飾したspanを挿入
-    }
-
     var prev=0;
     var check_count;
 
-  $("#trig1").bind("click", (function () {
-    var subWinObj1='cmanCP_POP';
-//    alert("Trigger is clicked!");
-    $("#cp01").trigger("click");
-    prev=10;
-    document.getElementById("cmanCP_POP" ).style.zIndex ='100';
-    check_count=0;
-    setTimeout("check_color()",200);
-    }));
-
-  $("#trig2").bind("click", (function () {
-    var subWinObj1='cmanCP_POP';
-//    alert("Trigger is clicked!");
-    $("#cp01").trigger("click");
-    prev=20;
-    document.getElementById("cmanCP_POP" ).style.zIndex ='100';
-    check_count=0;
-    setTimeout("check_color()",200);
-    }));
-
-  function check_color() {
-//console.log('Enter check_color',check_count);
-    //値が変更されたときの処理
-    if(!document.getElementById("cmanCP_POP")) {
-	if (prev==10) {
-		var col_code=document.getElementById("sample1" ).value;
-        	document.querySelector('#trig1').style.backgroundColor = col_code;
-//console.log('color=',col_code);
- 	    	}
-	if (prev==20) {
-		var col_code=document.getElementById("sample1" ).value;
-        	document.querySelector('#trig2').style.backgroundColor = col_code;
-//console.log('color=',col_code);
-	    	}
-	}
-    else {
-	check_count=check_count+1;
-	if(check_count>50) {
-		return;
-		}
-	setTimeout("check_color()",200);
-	}
-    }
-
-    chara.onclick = function() {
-const selectedText = window.getSelection().toString();
-colval=document.querySelector('#trig1').style.backgroundColor;
-console.log('Sel_text=',selectedText,'color=',colval);
-
-var sel = window.getSelection();
-  if(!sel.rangeCount) return; 
-
-  var range = sel.getRangeAt(0);　　　　　　　　　　　//OK!!　<font>でも下記の<span>でもOK
-  var font = document.createElement("font");
-  font.style.color = colval;
-  range.surroundContents(font);
-
-//  var span = document.createElement("span");     //OK
-//  span.style.color = colval;
-//  range.surroundContents(span);
-
-    }
-/*          Ajax POST で必要となるか？？？？？？？？？？？
- function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-var csrftoken = getCookie('csrftoken');
-
-function csrfSafeMethod(method) {
-            // these HTTP methods do not require CSRF protection
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
-
-$.ajaxSetup({
-            beforeSend: function (xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
-            }
-        });
-*/
-//function SVG_select() {
-//}
-
-function doc_save() {
-//    doc_save.onclick = function() {
-console.log('*** SAVE　Entered  Direct to server ***');
-	var tex_to_serv=escapeHtml(escape(document.getElementById("texx").innerHTML));
-	var svg_tags=document.querySelector('#myCanvas');
-console.log('**Svg_tag length=',svg_tags.childElementCount);
-	svg_tag='';
-	for (nn = 0; nn < svg_tags.childElementCount; nn++) {
-		svg_tag=svg_tag+svg_tags.children[nn].outerHTML+'|<=>|';
-console.log('***list n =',nn,' length = ', svg_tag.length);
-		}
-	var svg_tag=escapeHtml(escape(svg_tag));
-console.log('svg_tag',svg_tag);
-console.log(tex_to_serv);
-        $.ajax({
-            url: "/db_serv/update/",
-            data: {
-		"description":tex_to_serv,
-		"svg":svg_tag,
-		},
-            dataType: 'json'
-        })
-        .done((data) => {
-            //結果が帰ってきたら、表示します。
-            //$('#answer').html('<span class="flower-answer-text">' + data['result'] + '</span>');
-console.log('**Ajax Returned result=',data);
-        });
-   }
-
-/* SVGfileの読み込み　　　　　　　　　　　　　*/
-　　var obj1 = document.getElementById("selfile");
-　　//ダイアログでファイルが選択された時
-　　obj1.addEventListener("change",function(evt){
-  　var file = evt.target.files;
-　　//FileReaderの作成
-  　var reader = new FileReader();
-  　//テキスト形式で読み込む
-  　reader.readAsText(file[0]);
-  　
-  　//読込終了後の処理
-  　reader.onload = function(ev){
-    //テキストエリアに表示する
-    //document.test.txt.value = reader.result;
-
-　　//const svgText = SVGData;
-　　//svgText=document.test.txt.value;
-　　svgText = reader.result;
-　　const domParser = new DOMParser();
-　　const parsedSVGDoc = domParser.parseFromString(svgText, 'image/svg+xml');
-　　console.log(parsedSVGDoc.childNodes[0]);
-　　const parsedSVG = parsedSVGDoc.childNodes[0];
- 
-　　//htmlのSVG
-　　const svg = document.querySelector('#myCanvas');
-　　//生成したSVGをhtmlにそのまま入れる
-　　svg.appendChild(parsedSVG);
-  　　}
-　　},false);
-//
     var isDrawing = false;
     var drawingPoints=[];
     var drawingPath=null;
@@ -518,16 +454,13 @@ console.log('mousedown');
 	}
 }
 
-//メニューのアイコン関係
-    var menuIcon = document.getElementsByClassName("menuicon");
-    for (i = 0; i < menuIcon.length; i++) {
-        menuIcon[i].addEventListener("click", canvasMenu, false)
-    }
-
+function show_view(){
 //　ブラウザ表示用データの準備
-      var texxx=unescapeHtml(unescape("{{view_tex}}"));
+//      var texxx=unescapeHtml(unescape("{{view_tex}}"));
+      var texxx=unescapeHtml(unescape(view_tex));
       document.getElementById("texx").innerHTML=texxx;
-      var svg_tex=unescapeHtml(unescape("{{svg_field}}"));
+//      var svg_tex=unescapeHtml(unescape("{{svg_field}}"));
+      var svg_tex=unescapeHtml(unescape(svg_field));
 //console.log('**svg length=',svg_tex.length,' tex=',svg_tex);
       if(svg_tex!=''){
 　　　　　const svg = document.querySelector('#myCanvas');
@@ -565,7 +498,7 @@ document.getElementById("myCanvas").style.display="block";
 		document.getElementById( "texh" ).style.zIndex ='20';
 //		document.getElementById( "myCancas" ).style.zIndex ='20';
 		document.getElementById("texh").value=document.getElementById("texx").innerHTML;
-
+}
 //ダブルクリック時の処理を入れる
 var dbl_click_func=function(e){
 // ダブルクリックイベントの処理内容
@@ -690,334 +623,6 @@ console.log("****Initialized");
 		}
 	}
 
-function line_seq(Step){
-//console.log('switch=',sw_flag);
-	if(drawingPoints.length==1){
-		first_point=createFirstPoint(drawingPoints)
-	        Object.assign(first_point.style, defaultPointStyle);
-        	container.appendChild(first_point)
-		}
-	else {
-		if (first_point){
-			container.removeChild(first_point);
-			first_point=null;
-			}
-		}
-       if (drawingPath) {
-       			container.removeChild(drawingPath);
-            		}
-        	drawingPath = createPath(drawingPoints,0);
-        	Object.assign(drawingPath.style, defaultPathStyle);
-        	container.appendChild(drawingPath);
-//console.log('Path=',drawingPath);
-	}
-
-function quad_bezier_seq(Step){
-console.log('Step=',Step);
-	mStep=Step%3;
-	if(mStep==1){	
-		first_point=createFirstPoint([drawingPoints[drawingPoints.length-1]]);
-	        Object.assign(first_point.style, defaultPointStyle);
-        	container.appendChild(first_point)
-		}
-console.log('Bezier',Step,'length=',drawingPoints.length);
-	if (mStep==2) {
-//console.log(' last line= ',drawingPoints,[drawingPoints[drawingPoints.length-2],drawingPoints[drawingPoints.length-1]]);
-		bezier_line=createPath([drawingPoints[drawingPoints.length-2],drawingPoints[drawingPoints.length-1]],0)
-	        Object.assign(bezier_line.style, tempoPathStyle);
-        	container.appendChild(bezier_line)
-
-		if (first_point){
-			container.removeChild(first_point);
-			first_point=null;
-			}
-		}
-	if(mStep==0) {
-		if (drawingPath) {
-       			container.removeChild(drawingPath);
-            		}
-                drawingPath = createQuadBezier(drawingPoints);
-            	Object.assign(drawingPath.style, defaultPathStyle);
-            	container.appendChild(drawingPath);
-
-		if (bezier_line){
-			container.removeChild(bezier_line);
-			bezier_line=null;
-console.log('cubic bezier dummy removed length=',drawingPoints.length);
-			}
-		}
-console.log('append bezier');
-}
-
-function cubic_bezier_seq(Step){
-console.log('Step=',Step);
-	mStep=Step%4;
-	if(mStep==1){	
-		first_point=createFirstPoint([drawingPoints[drawingPoints.length-1]]);
-	        Object.assign(first_point.style, defaultPointStyle);
-        	container.appendChild(first_point)
-		}
-//console.log('Cubic Bezier',Step,'length=',drawingPoints.length);
-	if(mStep==2){
-console.log('Cubic Bezier line');
-		bezier_line=createPath([drawingPoints[drawingPoints.length-2],drawingPoints[drawingPoints.length-1]],0)
-	        Object.assign(bezier_line.style, tempoPathStyle);
-       		container.appendChild(bezier_line)
-
-		if (first_point){
-			container.removeChild(first_point);
-			first_point=null;
-			}
-		}
-	if(mStep==3){
-console.log('Cubic Bezier line');
-		bezier_line1=createPath([drawingPoints[drawingPoints.length-2],drawingPoints[drawingPoints.length-1]],0)
-	        Object.assign(bezier_line1.style, tempoPathStyle);
-       		container.appendChild(bezier_line1)
-		}
-	if(mStep==0) {
-		if (drawingPath) {
-       			container.removeChild(drawingPath);
-            		}
-                drawingPath = createCubicBezier(drawingPoints);
-            	Object.assign(drawingPath.style, defaultPathStyle);
-            	container.appendChild(drawingPath);
-
-		if (bezier_line){
-			container.removeChild(bezier_line);
-			bezier_line=null;
-			}
-		if (bezier_line1){
-			container.removeChild(bezier_line1);
-			bezier_line1=null;
-			}
-		}
-console.log('Cubic Bezier line',drawingPoints);
-}
-
-//Move_modeならばmouseの動きについての処理を記述する
-    container.addEventListener('mousemove', function(e) {
-	if((Move_mode)&&(!isDrawing)) {
-console.log('mouse move');
-/*
-		if (control.value== 'free_line'){
-			isDrawing=true;
-			mv_flag=0;
-			drawingPoints=[];
-console.log('Reset isDraw')
-			
-			}
-		if ((control.value== 'quad_bezier') &&(Step==3)){
-			isDrawing=true;
-			mv_flag=1;
-			}
-		if ((control.value== 'cubic_bezier') &&(Step==4)){
-			isDrawing=true;
-			mv_flag=2;
-			}
-console.log('move_flag=',mv_flag,'Oper=',Oper);
-		}
-	switch(mv_flag){
-		case 0:
-            		drawingPoints.push({x: e.clientX,y: e.clientY});
-            		if (drawingPath) {
-                		container.removeChild(drawingPath);
-console.log('remove point');
-            			}
-                	drawingPath = createPath(drawingPoints,0);
-            		Object.assign(drawingPath.style, defaultPathStyle);
-            		container.appendChild(drawingPath);
-console.log('append point');
-			break;
-		case 1:
-			if(drawingPoints.length==3) {
-				drawingPoints.pop();
-				}
-            		drawingPoints.push({x: e.clientX,y: e.clientY});
-            		if (drawingPath) {
-                		container.removeChild(drawingPath);
-console.log('remove bezier');
-            			}
-			if(Step==0){
-				drawingPath=null;
-				}
-                	drawingPath = createQuadBezier(drawingPoints);
-            		Object.assign(drawingPath.style, defaultPathStyle);
-            		container.appendChild(drawingPath);
-console.log('append bezier');
-			break;
-		case 2:
-			if(drawingPoints.length==4) {
-				drawingPoints.pop();
-				}
-            		drawingPoints.push({x: e.clientX,y: e.clientY});
-            		if (drawingPath) {
-                		container.removeChild(drawingPath);
-console.log('remove cubic bezier');
-            			}
-			if(Step==0){
-				drawingPath=null;
-				}
-                	drawingPath = createCubicBezier(drawingPoints);
-            		Object.assign(drawingPath.style, defaultPathStyle);
-            		container.appendChild(drawingPath);
-console.log('append cubic bezier');
-			break;
-*/
-		}
-    });
-
-
-    function createPath(points,close) {
-        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        var attribute = '';
-        points.forEach((point, index) => {
-            if (index === 0) {
-                attribute += `M${point.x}, ${point.y}`;
-            } else {
-                attribute += `L${point.x}, ${point.y}`;
-            }
-        });
-	if(close==true){
-		attribute += ` Z`;
-		}
-        path.setAttributeNS(null, 'd', attribute);
-console.log(path)
-        return path;
-    }
-
-    function createQuadBezier(points) {
-console.log('quad bezier','length=',points.length);
-        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        var attribute = '';
-	var nx=2;
-        points.forEach((point, index) => {
-	    nx=nx+1;
-	    mod3_nx=nx % 3;
-console.log('nx=',nx,' mod3=',mod3_nx);
-            if (mod3_nx== 0) {
-		if(nx<4){
-                	attribute += `M${point.x}, ${point.y}`;
-            		} 
-		else {
-			attribute += `T${point.x}, ${point.y}`;
-			}
-		}
-	    else if (mod3_nx==1) {
-                attribute += `Q${point.x}, ${point.y}`;
-            	}
-	    else {
-		attribute += ` ${point.x}, ${point.y}`;
-		}
-        });
-        path.setAttributeNS(null, 'd', attribute);
-console.log(path)
-        return path;
-    }
-
-    function createCubicBezier(points) {
-console.log('cubic bezier','length=',points.length);
-        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        var attribute = '';
-	var nx=3;
-        points.forEach((point, index) => {
-	    nx=nx+1;
-	    mod3_nx=nx % 4;
-console.log('nx=',nx,' mod3=',mod3_nx);
-            if (mod3_nx== 0) {
-		if(nx<5){
-                	attribute += `M${point.x}, ${point.y}`;
-            		} 
-		else {
-			attribute += `T${point.x}, ${point.y}`;
-			}
-		}
-	    else if (mod3_nx==1) {
-                attribute += `C${point.x}, ${point.y}`;
-            	}
-	    else if (mod3_nx==2) {
-                attribute += ` ${point.x}, ${point.y}`;
-            	}
-	    else {
-		attribute += ` ${point.x}, ${point.y}`;
-		}
-        });
-        path.setAttributeNS(null, 'd', attribute);
-console.log(path)
-        return path;
-    }
-
-//mouseup時の処理
-    container.addEventListener('mouseup', function(e) {
-	++Up_count;
-console.log('mouse up');
-	if(mouse_Error) {
-		mouse_Error=false;
-		Up_count=0;
-		}
-	if (Move_mode) {
-console.log('canceled Move_mode');
-/*
-		Move_mode=0;
-		Up_count=0;
-
-		if ((control.value=='free_line')||(control.value=='quad_bezier')||(control.value=='cubic_bezier')){
-			}
-		else {
-			return;
-			}
-        	isDrawing = false;
-        	if (drawingPath) {
-	        	container.removeChild(drawingPath);
-			}
-        	drawingPath = null;
-       	 	var path;
-
-        	if ((control.value === 'quad_bezier') && (Step==3)){
-console.log('bezier mouseup');
-            		path = createQuadBezier('',drawingPoints, 0);
-	    		Step=1;
-	    		var drawPoints=drawingPoints;
-	   		 drawingPoints=[];
-            		drawingPoints.push(drawPoints[2]);
-            		if (bezier_line){
-				container.removeChild(bezier_line);
-				bezier_line=null;
-console.log('bezier dummy removed length=',drawingPoints.length);
-				}
-			first_point=createFirstPoint(drawingPoints)
-	        	Object.assign(first_point.style, defaultPointStyle);
-        		container.appendChild(first_point)
-		        }
-        	else if ((control.value === 'cubic_bezier') && (Step==4)){
-console.log('cubic bezier mouseup');
-            		path = createCubicBezier(drawingPoints);
-	    		Step=1;
-	    		var drawPoints=drawingPoints;
-	   		 drawingPoints=[];
-            		drawingPoints.push(drawPoints[3]);
-            		if (bezier_line){
-				container.removeChild(bezier_line);
-				bezier_line=null;
-console.log('cubic bezier dummy removed length=',drawingPoints.length);
-				}
-			first_point=createFirstPoint(drawingPoints)
-	        	Object.assign(first_point.style, defaultPointStyle);
-        		container.appendChild(first_point)
-		        }
-		else {
-console.log('line mouseup');
-            		path = createPath(drawingPoints,0);
-	    		drawingPoints = [];
-        		}
-        	Object.assign(path.style, defaultPathStyle);
-        	container.appendChild(path);
-		isDrawing=false;
-		Oper=0;
-		mv_flag=10;
-*/
-	}
-    });
 
     function edit_mode(){
 console.log("Enter Text EditMode");
@@ -1028,96 +633,6 @@ console.log("Enter Text EditMode");
 		E_mode="Display";		
 	}
 	chng_mode();
-    }
-
-    function createFirstPoint(points) {
-	circ1=document.createElementNS('http://www.w3.org/2000/svg','circle');
-	circ1.setAttribute('cx',points[0].x);
-	circ1.setAttribute('cy',points[0].y);
-	circ1.setAttribute('r',4);
-//	circ1.setAttribute('fill','red');
-//	circ1.setAttribute('stroke','black');
-//	svg.appendChild(circ1);
-console.log(circ1)
-        return circ1;
-    }
-
-    //メニューボタン管理
-    function canvasMenu() {
-
-     if(Editmode=='Svg'){
-        //id 値によって場合分け
-        var thisId = this.id;
-        if (thisId.indexOf("size") + 1) {
-            defaultPathStyle.strokeWidth = this.id.slice(4, this.id.length);
-        }
-        if (thisId.indexOf("color") + 1) {
-            defaultPathStyle.stroke = "#" + this.id.slice(5, this.id.length);
-        }
-        if (thisId.indexOf("alpha") + 1) {
- //           defoalpha = (~~this.id.slice(5, this.id.length)) / 10;
-        }
-/*
-        if (thisId.indexOf("clear") + 1) {
-            //全消しボタン、OKされた場合は fillRect 長方形で覆います
-            if (confirm("すべて消去しますか？")) {
-                //ctx.fillStyle = "#f5f5f5";
-                //ctx.globalAlpha = defoalpha;
-   		//その描画状態を保存する
-		ctx.clearRect(0, 0, 700, 400);
-                //ctx.fillRect(0, 0, 700, 400);
-console.log('fillStyle=',ctx.fillStyle);
-		//sleep(2000);
-		//svg_str='<svg width="700px" height="400px" >'
-		//svg_str+=path_str+' /svg>';
-//console.log('**canvg',svg_str);
-		//canvg("myCanvas",svg_str);
-                mouseX = "";
-                mouseY = "";
-            }
-        }
-*/
-     }
-     else {
-	var selectedText = window.getSelection().toString();
-	console.log(selectedText);
-	var sel = window.getSelection();
-	if(!sel.rangeCount) return; //範囲選択されている箇所がない場合は何もせず終了
-	var range = sel.getRangeAt(0);　　　　　　　　　　　//　OK!!
-        //id 値によって場合分け
-        var thisId = this.id;
-        if (thisId.indexOf("size") + 1) {
-            var size = this.id.slice(4, this.id.length);
-            if(size=='14px') {
-		 h_size='h1'; 
-		}
-            if(size=='7px') {
-		 h_size='h2'; 
-		}
-            if(size=='5px') {
-		 h_size='h3'; 
-		}
-            if(size=='3px') {
-		 h_size='h4'; 
-		}
-            if(size=='2px') {
-		 h_size='h5'; 
-		}
-            if(size=='1px') {
-		 h_size='h6'; 
-		}
-		const selectedText = window.getSelection().toString();
-		console.log(h_size,selectedText);
-		var sel = window.getSelection();
-		if(!sel.rangeCount) return; //範囲選択されている箇所がない場合は何もせず終了
-		  var range = sel.getRangeAt(0);　　　　　　　　　　　//　OK!!
-		  var newNode = document.createElement(h_size);
-		  newNode.innerHTML =  sel.toString();   //tag部分に<>を含むと変更出来ない。
-		  range.deleteContents();    // 範囲選択箇所を一旦削除
-		  range.insertNode(newNode); // 範囲選択箇所の先頭から、修飾したspanを挿入
-        }
-
-     }
     }
 
 function chng_mode(){
@@ -1194,6 +709,67 @@ document.getElementById("myCanvas").style.display="none";
 		break;
     }
 }
+
+//　現レコードのnext表示レコードを取り出す
+function check_next() { 
+//編集中のレコードをDBに保存する
+    var tbl = document.getElementById("my_db");
+　　var k=k_table;
+    var ncheck=n_present;
+console.log('present=',n_present,'k=',k_table);
+    for (var i = n_present+1 ; i < nlist ; ++i) {
+//console.log('i=',i);
+	if(delflag[i]=="") {
+		k +=1;		//Table表示されているものの順番
+		ncheck=i;	// data_dの中でtable表示されcheckされているいるもの
+		k_table=k;
+		break;
+	}
+   }
+   n_present=ncheck;
+   var nums=Dataid[dispflag[n_present]];
+console.log('submit read_rec num=',nums,' Dataid numb=',n_present,' disp_num=',dispflag[n_present]);
+  //配列をJSON文字列に変換してアラート表示させる
+  var str = selA_value+','+selB_value+','+selC_value+','+selD_value+','+String(n_present)+','+String(k_table)+','+String(To_return)+','+String(edit_mode);
+  var ary = str.split(',');
+  var js_Selbox=JSON.stringify( ary );
+  //JSON文字列をセッションストレージに書き込む
+  sessionStorage.setItem( "jsonsSel" , js_Selbox );
+//  var js_delflag = JSON.stringify( delflag );
+//  var js_delflag = delflag.toString();
+//  sessionStorage.setItem( "jsonsfg" , js_delflag );
+   get_doc(nums);
+  return;
+}
+//　checkboxがcheckされているか調べる
+function check_prev() {
+//Table表示のレコード中のものでcheckが入っているもののdataidを特定する
+    var tbl = document.getElementById("my_db");
+　　var k=k_table;
+    var ncheck=n_present;
+    for (var i = n_present-1 ; i >0 ; --i) {
+	if(delflag[i]=="") {
+		k -=1;		//Table表示されているものの順番
+		ncheck=i;	// data_dの中でtable表示されcheckされているいるもの
+		k_table=k;
+		break;
+	} 
+   }
+   n_present=ncheck;
+   var nums=Dataid[dispflag[n_present]];
+console.log('submit read_rec num=',nums,' Dataid numb=',n_present);
+  //配列をJSON文字列に変換してアラート表示させる
+  var str = selA_value+','+selB_value+','+selC_value+','+selD_value+','+String(n_present)+','+String(k_table)+','+String(To_return)+','+String(edit_mode);
+  var ary = str.split(',');
+  var js_Selbox=JSON.stringify( ary );
+  //JSON文字列をセッションストレージに書き込む
+  sessionStorage.setItem( "jsonsSel" , js_Selbox );
+//  var js_delflag = JSON.stringify( delflag );
+//  var js_delflag = delflag.toString();
+//  sessionStorage.setItem( "jsonsfg" , js_delflag );
+    get_doc(nums);      //DBに対してrecord番号　numsを読み込む
+  return;
+}
 // ビジーwaitを使う方法
 function sleep(waitMsec) {
   var startMsec = new Date();
@@ -1233,196 +809,6 @@ function unescapeHtml(target) {
         return patterns[match];
     });
 };
-
-
-function catmullRom2bezier(pts){
-    var cubics = [];
-    for ( var i = 0, iLen = pts.length; i < iLen ; i++ ){
-        var p = [
-            pts[i - 1],
-            pts[i],
-            pts[i + 1],
-            pts[i + 2]
-        ];
-        if( i === 0 ){
-            p[0] = {
-                x: pts[ 0 ].x,
-                y: pts[ 0 ].y
-            }
-        }
-        if( i === iLen - 2 ){
-            p[3] = {
-                x: pts[iLen - 2].x,
-                y: pts[iLen - 2].y
-            };
-        }
-        if ( i === iLen - 1 ) {
-            p[2] = {
-                x: pts[iLen - 1].x, 
-                y: pts[iLen - 1].y
-            };
-            p[3] = {
-                x: pts[iLen - 1].x, 
-                y: pts[iLen - 1].y
-            };
-        }
-      const val = 6;
-        cubics.push([
-            (-p[0].x + val * p[1].x + p[2].x) / val,
-            (-p[0].y + val * p[1].y + p[2].y) / val,
-            (p[1].x + val * p[2].x - p[3].x) / val,
-            (p[1].y + val * p[2].y - p[3].y) / val,
-            p[2].x,
-            p[2].y
-        ]);
-    }
-    return cubics;
-}
-
-function Cubic_interpol(pts){
-   var iLen= pts.length;
-   var cubics=[];
-   var an=[];
-   var slope=[];
-   var vn=[];
-   var wn=[];
-
-   for ( var i = 0;  i < iLen ; i++ ){
-	an[i]=0;
-	slope[i]=0;
-	vn[i]=[0,0];
-	wn[i]=[0,0];
-	}
-
-   for ( var i = 1;  i < iLen-1 ; i++ ){
-	var dx0=pts[i].x-pts[i-1].x;
-	if(Math.abs(dx0)<0.1) {
-		dx0=Math.sign(dx0)*0.1;
-		}
-	var dx1=pts[i+1].x-pts[i].x;
-	if(Math.abs(dx1)<0.1) {
-		dx1=Math.sign(dx1)*0.1;
-		}
-	dy0=pts[i].y-pts[i-1].y;
-	dy1=pts[i+1].y-pts[i].y;
-	an[i-1]=dy0/dx0;
-	an[i]=dy1/dx1;
-	var sx0=pts[i+1].x-pts[i-1].x;
-	if(Math.abs(sx0)<0.1) {
-		sx0=Math.sign(sx0)*0.1;
-		}
-	sy0=pts[i+1].y-pts[i-1].y;
-	slope[i]=sy0/sx0;
-	}
-
-    var av=an[0];                         //直線an0(1,an0)に対する垂線のベクトル（1,dn0）を求める
-    if(Math.abs(av)<0.1){
-	var av=Math.sign(av)*0.1;
-	}
-    var x01=(pts[1].x+pts[0].x)/2;
-    var y01=(pts[1].y+pts[0].y)/2;
-    var dn0=-1/av;
-    var dx0=slope[1]-dn0;
-    if(Math.abs(dx0)<0.01){
-	dx0=Math.sign(dx0)*0.01;
-	}
-    var dy0=slope[1]*pts[1].x-dn0*x01-pts[1].y+y01;
-    var p01x=dy0/dx0;
-    var p01y=slope[1]*(p01x-pts[1].x)+pts[1].y;
-console.log('dn0= ',dn0,'center= ',x01,y01,'cross point= ',p01x,p01y);
-    dx0=p01x-pts[0].x
-    if(Math.abs(dx0)<0.1){
-	var dx0=Math.sign(dx0)*0.1;
-	}
-    slope[0]=(p01y-pts[0].y)/dx0;
-
-    var av=an[iLen-2];
-    if(Math.abs(av)<0.1){
-	var av=Math.sign(av)*0.1;
-	}
-    var x01=(pts[iLen-1].x+pts[iLen-2].x)/2;
-    var y01=(pts[iLen-1].y+pts[iLen-2].y)/2;
-    var dn0=-1/av;
-    var dx0=slope[iLen-2]-dn0;
-    if(Math.abs(dx0)<0.01){
-	dx0=Math.sign(dx0)*0.01;
-	}
-    var dy0=slope[iLen-2]*pts[iLen-2].x-dn0*x01-pts[iLen-2].y+y01;
-    var p01x=dy0/dx0;
-    var p01y=slope[iLen-2]*(p01x-pts[iLen-2].x)+pts[iLen-2].y;
-    dx0=p01x-pts[iLen-1].x
-    if(Math.abs(dx0)<0.1){
-	var dx0=Math.sign(dx0)*0.1;
-	}
-    slope[iLen-1]=(p01y-pts[iLen-1].y)/dx0;
-
-    if((Math.abs(pts[0].x-pts[iLen-1].x)<1) && (Math.abs(pts[0].y-pts[iLen-1].y)<1)){
-	var sx0=pts[1].x-pts[iLen-2].x;
-	if(Math.abs(sx0)<0.1) {
-		sx0=Math.sign(sx0)*0.1;
-		}
-	sy0=pts[1].y-pts[iLen-2].y;
-	slope[0]=sy0/sx0;
-	slope[iLen-1]=slope[0];
-	}
-
-console.log(' an slope =',an,slope);
-var drawPoint=[];
-var x0,y0,x1,x2;
-   for ( var i = 0; i < iLen-1 ; i++ ){
-drawPoint.push({x: pts[i].x,y: pts[i].y});
-rr=Math.sqrt(1+slope[i]*slope[i]);
-x0=pts[i].x+Math.sign(pts[i+1].x-pts[i].x)*100/rr;
-y0=pts[i].y+Math.sign(pts[i+1].x-pts[i].x)*100*slope[i]/rr;
-drawPoint.push({x: x0,y: y0});
-console.log('Point0',x0,y0);
-console.log(drawPoint);
-bezier_line=createPath(drawPoint,0);
-Object.assign(bezier_line.style, tempoPathStyle);
-container.appendChild(bezier_line);
-drawPoint=[];
-//alert('JavaScriptのアラート');
-
-	var vv=an[i]*slope[i]*pts[i].x+(2*pts[i].x+pts[i+1].x)/3-an[i]*(pts[i].y-pts[i+1].y)/3;
-	var vm=an[i]*slope[i]+1;
-	if(Math.abs(vm)<0.1){
-		vm=Math.sign(vm)*0.1;
-		}
-	vn[i][0]=vv/vm;
-	vn[i][1]=slope[i]*(vn[i][0]-pts[i].x)+pts[i].y;
-
-drawPoint.push({x: pts[i+1].x,y: pts[i+1].y});
-rr=Math.sqrt(1+slope[i+1]*slope[i+1]);
-x1=pts[i+1].x-Math.sign(pts[i+1].x-pts[i].x)*100/rr;
-y1=pts[i+1].y-Math.sign(pts[i+1].x-pts[i].x)*100*slope[i+1]/rr;
-drawPoint.push({x: x1,y: y1});
-console.log('Point0',x1,y1);
-console.log(drawPoint);
-bezier_line=createPath(drawPoint,0);
-Object.assign(bezier_line.style, tempoPathStyle2);
-container.appendChild(bezier_line);
-drawPoint=[];
-
-	var ww=an[i]*slope[i+1]*pts[i+1].x+(pts[i].x+2*pts[i+1].x)/3+an[i]*(pts[i].y-pts[i+1].y)/3;
-	var wm=an[i]*slope[i+1]+1;
-	if(Math.abs(wm)<0.1){
-		wm=Math.sign(wm)*0.1;
-		}
-	wn[i][0]=ww/wm;
-	wn[i][1]=slope[i+1]*(wn[i][0]-pts[i+1].x)+pts[i+1].y;
-	}
-console.log('vn ,wn=',vn,wn);
-
-   for ( var i = 0; i < iLen-1 ; i++ ){
-	cubics.push({x: pts[i].x,y: pts[i].y});
-	cubics.push({x: vn[i][0],y: vn[i][1]});
-	cubics.push({x: wn[i][0],y: wn[i][1]});
-	}
-
-   cubics.push({x: pts[iLen-1].x,y: pts[iLen-1].y});
-console.log('Cubics=',cubics);
-   return cubics;
-}
 
 function splitArray(array, part) {
     var tmp = [];

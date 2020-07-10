@@ -23,4 +23,5 @@ urlpatterns = [
     path('db_serv/',include('db_serv.urls')),
     path('admin/', admin.site.urls),
     path('',include('db_serv.urls')),
+    path('contact/',include('contact.urls')),
 ]

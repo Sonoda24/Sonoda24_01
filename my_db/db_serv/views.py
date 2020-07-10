@@ -71,7 +71,9 @@ def get_combo(request):
 #    return render(request, '',context)
 #    return render(request, 'db_serv/get_combo.html',context)
 # ------------------------------------------------------------------
-def detail(request, data_id):
+def detail(request):
+#def detail(request, data_id):
+    """    
     global db_data,svg_data
     try:
         db_data = My_Data.objects.get(pk=data_id)
@@ -89,11 +91,64 @@ def detail(request, data_id):
             }
     except My_Data.DoesNotExist:
         raise Http404("da_data does not exist")
+    """
+    context={}
     return render(request, 'db_serv/detail.html', context)
-#def detail(request,data_id):
-# 
-#    return render(request, 'db_serv/detail.html')
-#]
+# ------------------------------------------------------------------    
+def get_rec(request):
+    global db_data,svg_data
+    print("**Strat get_rec** recieve ")
+    data_id = request.GET.get("rec_number")
+    print("rec_number= "+ data_id)
+    data = My_Data.objects.get(pk=data_id)
+    svg_data=My_Svg.objects.get(pk=data_id)
+    svg_field=''
+    if(svg_data.svg_tags!=''):
+        svg_field = svg_data.svg_tags
+        svg_field=svg_field.strip()
+    numb=str(data.no)
+    theme=data.theme
+    bunrui1=data.bunrui1
+    bunrui2=data.bunrui2
+    bunrui3=data.bunrui3
+    day_regist=data.day_regist
+    overview=data.overview
+    description=data.description    
+    
+    context = {
+	'no':numb,
+	'theme':theme,
+	'bunrui1':bunrui1,
+	'bunrui2':bunrui2,
+	'bunrui3':bunrui3,
+	'day_regist':day_regist,
+	'overview':overview,
+    'view_tex':description,
+    'svg_field':svg_field,
+        }
+    
+    return JsonResponse(context)
+# ------------------------------------------------------------------
+def editor(request, data_id):
+    global db_data,svg_data
+    try:
+        db_data = My_Data.objects.get(pk=data_id)
+        view_tex=db_data.description
+        print('Db_data',db_data.overview)
+        svg_data=My_Svg.objects.get(pk=data_id)
+        svg_field=''
+        if(svg_data.svg_tags!=''):
+            svg_field = svg_data.svg_tags
+            svg_field=svg_field.strip()
+            print('**Svg=',svg_field)
+        context = {
+            'view_tex': view_tex,
+            'svg_field': svg_field,
+            }
+    except My_Data.DoesNotExist:
+        raise Http404("da_data does not exist")
+    return render(request, 'db_serv/editor.html', context)
+# ------------------------------------------------------------------    
 def update(request):
     global db_data,svg_data
     tex = request.GET.get("description")

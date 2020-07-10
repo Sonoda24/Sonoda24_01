@@ -1,5 +1,4 @@
-{% load static %}
-{% include 'db_serv/header2.html' %}
+{% include 'db_serv/list_header.html' %}
   <div class="main tab-content"><!-- Start main tab-content -->
     <div class="tab-pane" id="tab1"><!-- Start tab1 -->
      <div class="row">
@@ -78,7 +77,8 @@
         <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
 	<ul class="navbar-nav">
 		<li class="nav-item" id="menu01"><a class="nav-link" href="#!" onclick="displaydb()">検索</a></li>
-		<li class="nav-item" id="menu02"><a class="nav-link" href="#!" onclick="check_checkbox()">抽出</a></li>
+		<!-- li class="nav-item" id="menu02"><a class="nav-link" href="#!" onclick="displaydb()">抽出</a></li -->
+                <li class="nav-item" id="menu02"><a class="nav-link" href="{% url 'detail' %}" onclick="return check_checkbox();">抽出</a>
 		<li class="nav-item" id="menu03"><a class="nav-link" href="#!" onclick="new_add2()">新規</a></li>
 		<li class="nav-item" id="menu04"><a class="nav-link" href="">終了</a></li>
 		<li class="nav-item" id="menu05"><a class="nav-link" href="">Home</a></li>
@@ -120,8 +120,7 @@
     </div><!-- End tab2 -->
   </div><!-- End main tab-content -->
 <script>
-//scriptのmain処理
-//globalな変数を定義する。
+//最初の処理は検索　index.htmlでDB全体読み込みと検索用変数をsessionStorageに作成済
    var edit_mode="Search";
    var Last_mode="Search";
    var Editable=false;
@@ -145,15 +144,15 @@
 //console.log('bunrui1=',JSON.stringify(DataB));
 
 //直前の処理に応じて検索画面かEditor画面かを選択する
-console.log('from Server gCode=',gCode);
-   if(gCode=="initial") {			//HTMLブラウザをonのまま（session storage記憶中）再実行の場合
+//console.log('from Server gCode=',gCode);
+   if(gCode=="initial") {	//HTMLブラウザをonのまま（session storage記憶中）再実行の場合
 	var selA_value="";
 	var selB_value="";
 	var selC_value="";
 	var selD_value="";
 	var n_present=0;
 	var k_table=1;
-	for(i=1;i<nlist;i++){
+	for(i=0;i<nlist;i++){
 		if(delflag[i]!="D")　{
 				delflag[i]=""; 
 			}
@@ -161,18 +160,18 @@ console.log('from Server gCode=',gCode);
 	edit_mode="Search";
    }
     else {
+//DB原稿の場合の処理
 	var Selbox =　JSON.parse( sessionStorage.getItem("jsonsSel") );
 	var selA_value=Selbox[0];
 	var selB_value=Selbox[1];
 	var selC_value=Selbox[2];
 	var selD_value=Selbox[3];
-	var n_present=Number(Selbox[4]);       //
-	var k_table=Number(Selbox[5]);         //
+	var n_present=Number(Selbox[4]);       //現在の原稿　present　data
+	var k_table=Number(Selbox[5]);         //Print Tableの何番目か
 	To_return=Selbox[6];
 	Last_mode=Selbox[7];
 console.log('jsonparse Selbox',Selbox,'selA=',selA_value,selB_value,selC_value,selD_value);
 console.log('nlist=',nlist,'n_present=',n_present,' rec_num=',Dataid[dispflag[n_present]],' k_table=',k_table,'To_return=',To_return,'Last_mode=',Last_mode);
-//	edit_mode="Search";
 	if(gCode=="add_data") {
 		Dataid[dispflag[n_present]]=gid;
 		edit_mode="";
@@ -274,7 +273,7 @@ console.log("Last mode=",Last_mode,"edit_mode=",edit_mode);
 //
 //Searchタブの処理
 //
-　　if(edit_mode=="Search") {
+　　if(edit_mode=="Search") {                     //Searchの場合はtab2表示でtab1非表示
         nodisp=document.getElementById('tab1');
         nodisp.style.display='none';
         disp=document.getElementById('tab2');
@@ -282,7 +281,7 @@ console.log("Last mode=",Last_mode,"edit_mode=",edit_mode);
 
 	var Search_level=0;
    	var BfS_level=0;
-   	var n_disp=nlist-1;    //最初のnullデータを除くTable出力（display)されるデータ数
+   	var n_disp=nlist;    //最初のnullデータを除くTable出力（display)されるデータ数
 
 
 //直前の選択項目に基づいたcomboboxをsetする
@@ -339,7 +338,7 @@ console.log('SelB=',selB_value,'comb=',comb);
 	displaydb();
 　　　}
 //
-//Editタブの処理
+//ここからはDB原稿表示　Editタブの処理
 //
 　　　else {
        	nodisp=document.getElementById('tab2');
@@ -660,13 +659,14 @@ function transpose(a) {
     });
 }
 
+
 //　checkboxがcheckされているか調べる
 function check_checkbox() {
     To_return="";
 //Table表示のレコード中のものでcheckが入っているもののdataidを特定する
     var tbl = document.getElementById("my_db");
 　　var k=0;
-    for (var i = 1 ; i < nlist ; ++i) {
+    for (var i = 0 ; i < nlist ; ++i) {
 	if(delflag[i]=="") {
 		k +=1;		//Table表示されているものの順番
         	var row = tbl.rows[k];
@@ -685,7 +685,8 @@ function check_checkbox() {
    }
    n_present=ncheck;
    var nums=Dataid[dispflag[n_present]];
-console.log('submit read_rec num=',nums,' Dataid numb=',dispflag[n_present],' Table numb=',n_present);
+console.log('read_rec num=',nums,' Dataid numb=',dispflag[n_present],' Table numb=',n_present);
+console.log('select record=',DataF[dispflag[n_present]]);
   //配列をJSON文字列に変換してアラート表示させる
   var str = selA_value+','+selB_value+','+selC_value+','+selD_value+','+String(n_present)+','+String(k_table)+','+String(To_return)+','+String(edit_mode);
   var ary = str.split(',');
@@ -695,8 +696,9 @@ console.log('submit read_rec num=',nums,' Dataid numb=',dispflag[n_present],' Ta
 //  var js_delflag = JSON.stringify( delflag );
 //  var js_delflag = delflag.toString();
 //  sessionStorage.setItem( "jsonsfg" , js_delflag );
-   submit_get(nums);
-  return;
+//   submit_get(nums);
+alert('wait and check');
+  return true;
 }
 //　現レコードのnext表示レコードを取り出す
 function check_next() { 
@@ -768,9 +770,21 @@ console.log('submit read_rec num=',nums,' Dataid numb=',n_present);
 //  var js_delflag = JSON.stringify( delflag );
 //  var js_delflag = delflag.toString();
 //  sessionStorage.setItem( "jsonsfg" , js_delflag );
-   submit_get(nums);
+   submit_get(nums);      //DBに対してrecord番号　numsを読み込む
   return;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 function submit_all(){
 // フォームタグを生成
 var form = document.createElement('form');
@@ -803,6 +817,8 @@ document.body.appendChild(form);
 // 生成したフォームをSUBMIT
 form.submit();
 }
+
+//DB中のrecord　no番号numのものを読み込み
 function submit_get(num){
 // フォームタグを生成
 var form = document.createElement('form');
@@ -835,6 +851,8 @@ document.body.appendChild(form);
 // 生成したフォームをSUBMIT
 form.submit();
 }
+
+
 function submit_del(){
 	To_return="Next";
 //deleteするレコードのid_numberを取得する
@@ -1094,7 +1112,7 @@ console.log('last nlist= ',nlist);
 		dispflag.push(0);
 		nlist=DataA.length;
 		n_present=nlist-1;
-		for (var i = nlist-1 ; i > 1 ; i--) {
+		for (var i = nlist-1 ; i > 0 ; i--) {
 			delflag[i]=delflag[i-1];
 			dispflag[i]=dispflag[i-1];
 		}
@@ -1112,7 +1130,7 @@ console.log(' new_add disp=',dispflag[1],' n_present=',n_present,' rec_no=',nums
 		DataF[n_present]=view;
 		Dataid[n_present]=nums;
 		if (n_present!=1) {
-			for (var i = n_present ; i > 1 ; i--) {
+			for (var i = n_present ; i > 0 ; i--) {
 				delflag[i]=delflag[i-1];
 				dispflag[i]=dispflag[i-1];
 			}
@@ -1189,7 +1207,7 @@ console.log('Search level=',Search_level,' Before level=',BfS_level);
 //第１キーワード（課題）に従ってdelflagにてdata_dを選別する
 //テーブル定義部以外の行すべてを削除するテスト
 	   if (Search_level==1){
-		for(i=1;i<nlist;i++){
+		for(i=0;i<nlist;i++){
 //console.log('selA=',selA_value,' no=',i,' Data=',DataA[i],DataB[i],DataC[i],DataD[i]);
 			if((selA_value!==DataA[dispflag[i]])&&(delflag[i]!="D"))　{
 				delflag[i]="1";   //出力しない
@@ -1198,7 +1216,7 @@ console.log('Search level=',Search_level,' Before level=',BfS_level);
 		}
 	  }
 	   if (Search_level==2){
-		for(i=1;i<nlist;i++){
+		for(i=0;i<nlist;i++){
 			if((delflag[dispflag[i]]=="")&&(selB_value!==DataB[dispflag[i]])&&(delflag[i]!="D"))　{
 				delflag[i]="2";   //出力しない
 				n_disp=n_disp-1;
@@ -1206,7 +1224,7 @@ console.log('Search level=',Search_level,' Before level=',BfS_level);
 		}
 	  }
  	  if (Search_level==3){
-		for(i=1;i<nlist;i++){
+		for(i=0;i<nlist;i++){
 			if((delflag[i]=="")&&(selC_value!==DataC[dispflag[i]])&&(delflag[i]!="D"))　{
 				delflag[i]="3";   //出力しない
 				n_disp=n_disp-1;
@@ -1214,7 +1232,7 @@ console.log('Search level=',Search_level,' Before level=',BfS_level);
 		}
 	  }
  	  if (Search_level==4){
-		for(i=1;i<nlist;i++){
+		for(i=0;i<nlist;i++){
 			if((delflag[i]=="")&&(selD_value!==DataD[dispflag[i]])&&(delflag[i]!="D"))　{
 				delflag[i]="4";   //出力しない
 				n_disp=n_disp-1;
@@ -1230,9 +1248,9 @@ console.log('standard Search=',Search_level,' nlist=',nlist,'n_disp=',n_disp);
 			 delflag[i]="";   //全件出力
 		}
 	}
-	n_disp=nlist-1;
+	n_disp=nlist;
 	 if (Search_level>0){
-		for(i=1;i<nlist;i++){
+		for(i=0;i<nlist;i++){
 			if((selA_value!==DataA[dispflag[i]])&&(delflag[i]!="D"))　{
 				delflag[i]="1";   //出力しない
 				n_disp=n_disp-1;
@@ -1240,7 +1258,7 @@ console.log('standard Search=',Search_level,' nlist=',nlist,'n_disp=',n_disp);
 		}
 	  }
 	  if (Search_level>1){
-		for(i=1;i<nlist;i++){
+		for(i=0;i<nlist;i++){
 			if((delflag[i]=="")&&(selB_value!==DataB[dispflag[i]])&&(delflag[i]!="D"))　{
 				delflag[i]="2";   //出力しない
 				n_disp=n_disp-1;
@@ -1248,7 +1266,7 @@ console.log('standard Search=',Search_level,' nlist=',nlist,'n_disp=',n_disp);
 		}
 	  }
  	  if (Search_level>2){
-		for(i=1;i<nlist;i++){
+		for(i=0;i<nlist;i++){
 			if((delflag[i]=="")&&(selC_value!==DataC[dispflag[i]])&&(delflag[i]!="D"))　{
 				delflag[i]="3";   //出力しない
 				n_disp=n_disp-1;
@@ -1256,7 +1274,7 @@ console.log('standard Search=',Search_level,' nlist=',nlist,'n_disp=',n_disp);
 		}
 	  }
  	  if (Search_level>3){
-		for(i=1;i<nlist;i++){
+		for(i=0;i<nlist;i++){
 			if((delflag[i]=="")&&(selD_value!==DataD[dispflag[i]])&&(delflag[i]!="D"))　{
 				delflag[i]="4";   //出力しない
 				n_disp=n_disp-1;
@@ -1273,7 +1291,7 @@ console.log('ResetSeq: Search=',Search_level,' nlist=',nlist,'n_disp=',n_disp);
 // 出力データの1行目はtr_first実体に割り付ける
   var tr_first = tbody.childNodes[1];　　　//　childNodes[0]はシステム的な定義で出力用はchildNodes[1]
   if (n_disp>0) { // テーブル先頭行がある場合
-	var n_first=1;
+	var n_first=0;
 	while(delflag[n_first]!=""){
 		  n_first++;
 		}

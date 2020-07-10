@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'contact',
 ]
 
 MIDDLEWARE = [
@@ -124,4 +125,11 @@ STATICFILES_DIRS = (
     [
         os.path.join(BASE_DIR, "static"),
     ]
-)
+)    
+#""" メールサーバー用　"""
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'yzr.sonoda@gmail.com'
+EMAIL_HOST_PASSWORD = 'kkyluagrfjgfygaz'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+

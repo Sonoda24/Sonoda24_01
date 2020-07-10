@@ -13,7 +13,9 @@ urlpatterns = [
     path('list', views.list,name='list'),
     path('new_list', views.new_list, name='new_list'),
     path('get_combo/', views.get_combo, name='get_combo'),
-    path('detail/<int:data_id>/', views.detail, name='detail'), 
+    path('get_rec/', views.get_rec, name='get_rec'), 
+    path('detail', views.detail, name='detail'),
+    path('editor/<int:data_id>/', views.editor, name='editor'),    
     path('update/', views.update, name='update'),
     path('file_upload/', views.file_upload, name='file_upload'),
 ]

@@ -1,0 +1,160 @@
+{% include 'db_serv/index_header.html' %}
+<div class="card shadow rounded">
+    <div class="card-header">
+        Pythonですぐ体験できる機械学習・深層学習
+    </div>
+    <div class="card-body" style="background-color:slategrey;">
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">機械学習・深層学習デモウェブアプリへようこそ！</h4>
+            <hr>
+            <p>機械学習・深層学習の入門の勉強のために、自由にご活用ください。</p>
+        </div>
+        <div class="alert alert-danger">
+            <p>アプリケーションの内容はご自身が確認した上で、実行してください。</p>
+            <p>このアプリケーションの実行による情報機器への影響や損害など、一切の責任をおいかねますので、ご注意ください。</p>
+            <p>アップロードする画像ファイルは、jpegやjpgフォーマットに限ります。</p>
+        </div>
+    </div>
+    <div class="card-footer text-center">
+        アドバイス、コメント等は、githubで、issueやPRをください。
+        よろしくお願い致します。
+    </div>
+</div>
+<script>
+// 処理の中身
+function firstscript(){
+console.log('** Initial Stage');
+  var dfd=$.Deferred();
+//初回か否かの判定にsessionstorageを使う方法
+  var key = 'my_session';
+  if(!window.sessionStorage.getItem(key)) {
+    // セットされてなければnullなのでこのブロックに入る。
+console.log('** Ajax Start and Get all Data Stage');
+    window.sessionStorage.setItem(key, 1);
+
+        $.ajax({
+            url: "/db_serv/get_combo/",
+            data: {
+		"message":"**put all data**",
+		},
+            dataType: 'json'
+        })
+        .done((data) => {
+	    var gDataid=data.no;
+　　　　    var gDataA=data.theme;
+　　　　    var gDataB=data.bunrui1;
+　　　　    var gDataC=data.bunrui2;
+　　　　    var gDataD=data.bunrui3;
+　　　　    var gDataE=data.day_regist;
+　　　　    var gDataF=data.overview;
+console.log('theme= ',gDataA);
+console.log('end tex');
+console.log('**Ajax Returned result=',data);
+
+
+   var key1 = 'read_data';
+   if(!window.sessionStorage.getItem(key1)) {
+    // セットされてなければnullなのでこのブロックに入る。
+console.log('** read_data Stage');
+// 初回なのでsessionStorageのkey1値を格納する
+        window.sessionStorage.setItem(key1, 1);
+
+//　ブラウザ表示用データの準備 Dataは既にAjaxによりDBより入手済
+
+	var selA_value="";
+	var selB_value="";
+	var selC_value="";
+	var selD_value="";
+	var n_present=0;     //　現在Editor対象のレコードのdispflagの番号
+	var k_table=1;       //　Table表示の番号
+	var str = selA_value+','+selB_value+','+selC_value+','+selD_value+','+String(n_present)+','+String(k_table);
+	var ary = str.split(',');
+
+	var E_selA="";
+	var E_selB="";
+	var E_selC="";
+	var E_selD="";
+
+	var DataA = gDataA.split(';,;', -1);
+	var DataB = gDataB.split(';,;', -1);
+	var DataC = gDataC.split(';,;', -1);
+	var DataD = gDataD.split(';,;', -1);
+	var DataE = gDataE.split(';,;', -1);
+	var DataF = gDataF.split(';,;', -1);
+	var Dataid = gDataid.split(';,;', -1);
+	var delflag = gDataid.split(';,;', -1);
+	var dispflag = gDataid.split(';,;', -1);
+	var nlist=DataA.length;
+	for(i=0;i<nlist;i++){
+		dispflag[i]=i;
+		}
+console.log('length A,B,C,D,F=',DataA.length,DataB.length,DataC.length,DataD.length,DataE.length,DataF.length)
+  //配列をJSON文字列に変換
+  	var js_DataA = JSON.stringify( DataA );
+  	var js_DataB = JSON.stringify( DataB );
+  	var js_DataC = JSON.stringify( DataC );
+  	var js_DataD = JSON.stringify( DataD );
+  	var js_DataE = JSON.stringify( DataE );
+  	var js_DataF = JSON.stringify( DataF );
+  	var js_Dataid = JSON.stringify( Dataid );
+        var js_delflag = JSON.stringify( delflag );
+        var js_dispflag = JSON.stringify( dispflag );
+ 	var js_Selbox=JSON.stringify( ary );
+
+  //JSON文字列をセッションストレージに書き込む
+  	sessionStorage.setItem( "jsonsA" , js_DataA );
+  	sessionStorage.setItem( "jsonsB" , js_DataB );
+  	sessionStorage.setItem( "jsonsC" , js_DataC );
+  	sessionStorage.setItem( "jsonsD" , js_DataD );
+  	sessionStorage.setItem( "jsonsE" , js_DataE );
+  	sessionStorage.setItem( "jsonsF" , js_DataF );
+        sessionStorage.setItem( "jsonsid" , js_Dataid );
+        sessionStorage.setItem( "jsonsfg" , js_delflag );
+        sessionStorage.setItem( "jsonsdisp" , js_dispflag );
+	sessionStorage.setItem( "jsonsSel" , js_Selbox );
+   }
+	    dfd.resolve();
+        });
+   }
+
+// そのほか必要な処理
+	return dfd.promise();
+}
+
+function escapeHtml(convertString) {
+    if (typeof convertString !== 'string') return convertString;
+ 
+    var patterns = {
+        '<'  : '&lt;',
+        '>'  : '&gt;',
+        '&'  : '&amp;',
+        '"'  : '&quot;',
+        '\'' : '&#x27;',
+        '`'  : '&#x60;'
+    };
+ 
+    return convertString.replace(/[<>&"'`]/g, function(match) {
+        return patterns[match];
+    });
+};
+function unescapeHtml(target) {
+    if (typeof target !== 'string') return target;
+ 
+    var patterns = {
+        '&lt;'   : '<',
+        '&gt;'   : '>',
+        '&amp;'  : '&',
+        '&quot;' : '"',
+        '&#x27;' : '\'',
+        '&#x60;' : '`'
+    };
+ 
+    return target.replace(/&(lt|gt|amp|quot|#x27|#x60);/g, function(match) {
+        return patterns[match];
+    });
+};
+
+
+
+</script>
+{% include 'db_serv/footer.html' %}
